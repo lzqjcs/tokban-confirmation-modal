@@ -3,7 +3,7 @@
   "repository": {
     "url": "https://github.com/lzqjcs/tokban-confirmation-modal"
   },
-  "version": "1.0.0",
+  "version": "2.0.0",
   "license": "MIT",
   "scripts": {
     "build": "weweb build",
