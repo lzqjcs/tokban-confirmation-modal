@@ -461,21 +461,21 @@ export default {
   line-height: 1.6;
 }
 
-.tokban-modal-body-content >>> p {
+.tokban-modal-body-content :deep(p) {
   margin: 0 0 8px 0;
 }
 
-.tokban-modal-body-content >>> ul {
+.tokban-modal-body-content :deep(ul) {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.tokban-modal-body-content >>> li {
+.tokban-modal-body-content :deep(li) {
   margin-bottom: 4px;
 }
 
-.tokban-modal-body-content >>> strong {
+.tokban-modal-body-content :deep(strong) {
   font-weight: 600;
 }
 
@@ -494,11 +494,11 @@ export default {
   line-height: 1.4;
 }
 
-.tokban-modal-typed-label >>> strong {
+.tokban-modal-typed-label :deep(strong) {
   font-weight: 700;
 }
 
-.tokban-modal-typed-label >>> span {
+.tokban-modal-typed-label :deep(span) {
   font-family: monospace;
 }
 
