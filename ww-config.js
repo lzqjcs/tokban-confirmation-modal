@@ -125,9 +125,6 @@ export default {
       section: 'settings',
       bindable: true,
       defaultValue: '<p style="font-size:14px;color:#4b5563;">Are you sure you want to proceed?</p>',
-      options: {
-        textarea: true,
-      },
       /* wwEditor:start */
       bindingValidation: {
         type: 'string',

@@ -361,7 +361,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 /* ═══════════════════════════════════════
    BACKDROP
    ═══════════════════════════════════════ */
@@ -459,21 +459,24 @@ export default {
 
 .tokban-modal-body-content {
   line-height: 1.6;
+}
 
-  :deep(p) {
-    margin: 0 0 8px 0;
-  }
-  :deep(ul) {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  :deep(li) {
-    margin-bottom: 4px;
-  }
-  :deep(strong) {
-    font-weight: 600;
-  }
+.tokban-modal-body-content >>> p {
+  margin: 0 0 8px 0;
+}
+
+.tokban-modal-body-content >>> ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tokban-modal-body-content >>> li {
+  margin-bottom: 4px;
+}
+
+.tokban-modal-body-content >>> strong {
+  font-weight: 600;
 }
 
 /* ═══════════════════════════════════════
@@ -489,13 +492,14 @@ export default {
   color: #4b5563;
   margin-bottom: 6px;
   line-height: 1.4;
+}
 
-  :deep(strong) {
-    font-weight: 700;
-  }
-  :deep(span) {
-    font-family: monospace;
-  }
+.tokban-modal-typed-label >>> strong {
+  font-weight: 700;
+}
+
+.tokban-modal-typed-label >>> span {
+  font-family: monospace;
 }
 
 .tokban-modal-typed-input {
@@ -509,15 +513,15 @@ export default {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   background: #ffffff;
   color: #111827;
+}
 
-  &::placeholder {
-    color: #9ca3af;
-  }
+.tokban-modal-typed-input::placeholder {
+  color: #9ca3af;
+}
 
-  &:focus {
-    border-color: var(--focus-border, #ef4444);
-    box-shadow: 0 0 0 3px var(--focus-ring, rgba(239, 68, 68, 0.2));
-  }
+.tokban-modal-typed-input:focus {
+  border-color: var(--focus-border, #ef4444);
+  box-shadow: 0 0 0 3px var(--focus-ring, rgba(239, 68, 68, 0.2));
 }
 
 /* ═══════════════════════════════════════
@@ -543,10 +547,10 @@ export default {
   font-family: inherit;
   border-radius: 6px;
   transition: color 0.15s ease;
+}
 
-  &:hover {
-    color: #1f2937;
-  }
+.tokban-modal-cancel-btn:hover {
+  color: #1f2937;
 }
 
 .tokban-modal-confirm-btn {
@@ -560,15 +564,15 @@ export default {
   font-family: inherit;
   transition: background-color 0.15s ease, opacity 0.15s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
 
-  &:hover:not(:disabled) {
-    background-color: var(--confirm-hover) !important;
-  }
+.tokban-modal-confirm-btn:hover:not(:disabled) {
+  background-color: var(--confirm-hover) !important;
+}
 
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+.tokban-modal-confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* ═══════════════════════════════════════
