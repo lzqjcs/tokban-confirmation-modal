@@ -6,8 +6,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "woweb build",
-    "serve": "woweb serve"
+    "build": "weweb build",
+    "serve": "weweb serve"
   },
   "dependencies": {},
   "devDependencies": {
