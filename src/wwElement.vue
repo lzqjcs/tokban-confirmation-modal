@@ -1,5 +1,5 @@
 <template>
-  <div class="tokban-modal-root">
+  <div class="tokban-modal-root" :style="rootCssVars">
     <div
       v-if="showModal"
       class="tokban-modal-backdrop"
@@ -37,13 +37,21 @@
 
         <!-- Body -->
         <div class="tokban-modal-body">
+          <!-- Dropzone: drag & drop any WeWeb elements here -->
+          <wwLayout
+            path="bodyContent"
+            direction="column"
+            class="tokban-modal-body-dropzone"
+          />
+
+          <!-- Optional: Dynamic HTML from bound variable -->
           <div
             v-if="content?.bodyHtml"
-            class="tokban-modal-body-content"
+            class="tokban-modal-body-html"
             v-html="content.bodyHtml"
           ></div>
 
-          <!-- Typed confirmation -->
+          <!-- Built-in: Typed confirmation -->
           <div v-if="content?.requireTyped" class="tokban-modal-typed-section">
             <label
               v-if="content?.typedLabel"
@@ -136,6 +144,23 @@ export default {
     const backdropActive = ref(false);
     const isClosing = ref(false);
     const typedInputRef = ref(null);
+
+    // ── CSS Variables (set on root, cascade to all children) ──
+    const rootCssVars = computed(() => ({
+      '--backdrop-color': props.content?.backdropColor || 'rgba(0,0,0,0.4)',
+      '--backdrop-blur': props.content?.backdropBlur || '2px',
+      '--panel-radius': props.content?.borderRadius || '12px',
+      '--panel-bg': props.content?.panelBackground || '#ffffff',
+      '--title-color': props.content?.titleColor || '#111827',
+      '--title-size': props.content?.titleFontSize || '18px',
+      '--subtitle-color': props.content?.subtitleColor || '#6b7280',
+      '--footer-border': props.content?.footerBorderColor || '#f3f4f6',
+      '--footer-bg': props.content?.footerBackground || 'transparent',
+      '--btn-radius': props.content?.confirmBtnBorderRadius || '8px',
+      '--cancel-color': props.content?.cancelBtnColor || '#4b5563',
+      '--input-radius': props.content?.inputBorderRadius || '8px',
+      '--input-border': props.content?.inputBorderColor || '#d1d5db',
+    }));
 
     // ── Computed ──
     const currentIcon = computed(() => props.content?.icon || 'warning');
@@ -274,6 +299,7 @@ export default {
       backdropActive,
       isClosing,
       typedInputRef,
+      rootCssVars,
       currentIcon,
       iconWrapStyle,
       iconColorStyle,
@@ -305,8 +331,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
+  background: var(--backdrop-color);
+  backdrop-filter: blur(var(--backdrop-blur));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -347,8 +373,8 @@ export default {
 
 /* ── Panel ── */
 .tokban-modal-panel {
-  background: #ffffff;
-  border-radius: 12px;
+  background: var(--panel-bg);
+  border-radius: var(--panel-radius);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 100%;
   animation: tokban-modal-in 0.2s ease-out forwards;
@@ -389,16 +415,16 @@ export default {
 }
 
 .tokban-modal-title {
-  font-size: 18px;
+  font-size: var(--title-size);
   font-weight: 700;
-  color: #111827;
+  color: var(--title-color);
   margin: 0;
   line-height: 1.3;
 }
 
 .tokban-modal-subtitle {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--subtitle-color);
   margin: 2px 0 0;
   line-height: 1.4;
 }
@@ -408,31 +434,69 @@ export default {
   padding: 16px 24px;
 }
 
-.tokban-modal-body-content {
+/* Dropzone: renders dropped elements */
+.tokban-modal-body-dropzone {
+  min-height: 0;
+}
+
+/* wwEditor:start */
+.tokban-modal-body-dropzone:empty {
+  min-height: 48px;
+  border: 2px dashed #d0d0d0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.tokban-modal-body-dropzone:empty::after {
+  content: 'Drop body content here';
+  color: #999;
+  font-size: 13px;
+  font-style: italic;
+  pointer-events: none;
+}
+
+.tokban-modal-body-dropzone:hover:empty {
+  border-color: #007aff;
+  background: rgba(0, 122, 255, 0.04);
+}
+/* wwEditor:end */
+
+.tokban-modal-body-dropzone:not(:empty) {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+/* Optional HTML body */
+.tokban-modal-body-html {
   font-size: 14px;
   line-height: 1.5;
   color: #374151;
+  margin-top: 8px;
 }
 
-.tokban-modal-body-content :deep(p) {
+.tokban-modal-body-html :deep(p) {
   margin: 0 0 8px;
 }
 
-.tokban-modal-body-content :deep(p:last-child) {
+.tokban-modal-body-html :deep(p:last-child) {
   margin-bottom: 0;
 }
 
-.tokban-modal-body-content :deep(ul) {
+.tokban-modal-body-html :deep(ul) {
   margin: 8px 0;
   padding-left: 0;
   list-style: none;
 }
 
-.tokban-modal-body-content :deep(li) {
+.tokban-modal-body-html :deep(li) {
   margin-bottom: 6px;
 }
 
-.tokban-modal-body-content :deep(strong) {
+.tokban-modal-body-html :deep(strong) {
   font-weight: 600;
 }
 
@@ -452,8 +516,8 @@ export default {
 .tokban-modal-typed-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
   font-size: 14px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -473,14 +537,16 @@ export default {
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--footer-border);
+  background: var(--footer-bg);
+  border-radius: 0 0 var(--panel-radius) var(--panel-radius);
 }
 
 .tokban-modal-cancel-btn {
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #4b5563;
+  color: var(--cancel-color);
   background: none;
   border: none;
   cursor: pointer;
@@ -499,7 +565,7 @@ export default {
   font-weight: 600;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--btn-radius);
   cursor: pointer;
   transition: filter 0.15s, opacity 0.15s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);

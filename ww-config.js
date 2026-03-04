@@ -28,6 +28,10 @@ export default {
     },
   ],
   properties: {
+    // ═══════════════════════════════════════
+    // SETTINGS TAB — Functional properties
+    // ═══════════════════════════════════════
+
     // ── Visibility ──
     visible: {
       label: { en: 'Visible' },
@@ -43,7 +47,7 @@ export default {
       },
       propertyHelp: {
         tooltip:
-          'Toggle modal visibility. Bind this to a variable and set it to true from a workflow to show the modal.',
+          'Bind this to a variable and set it to true from a workflow to show the modal.',
       },
       /* wwEditor:end */
     },
@@ -119,21 +123,29 @@ export default {
       },
       /* wwEditor:end */
     },
+
+    // ── Body Dropzone (hidden — used by wwLayout) ──
+    bodyContent: {
+      hidden: true,
+      defaultValue: [],
+    },
+
+    // ── Body HTML (optional fallback for dynamic content) ──
     bodyHtml: {
-      label: { en: 'Body HTML' },
+      label: { en: 'Body HTML (optional)' },
       type: 'Text',
       section: 'settings',
-      defaultValue: '<p>Are you sure you want to proceed?</p>',
+      defaultValue: '',
       bindable: true,
       /* wwEditor:start */
       bindingValidation: {
         type: 'string',
         tooltip:
-          'HTML content for the modal body. Supports rich HTML with inline styles.',
+          'Optional HTML content rendered below the dropzone body. Use for dynamic content from workflows.',
       },
       propertyHelp: {
         tooltip:
-          'Accepts HTML string. Use inline styles for formatting. Build the HTML in your workflow and bind it here.',
+          'For static content, use the dropzone in the modal body instead. Use this for dynamic HTML built in workflows.',
       },
       /* wwEditor:end */
     },
@@ -198,11 +210,11 @@ export default {
       bindingValidation: {
         type: 'string',
         tooltip:
-          'If set, user must type this exact text to enable the confirm button. Leave empty for simple confirmation.',
+          'If set, user must type this exact text to enable confirm. Leave empty for simple confirmation.',
       },
       propertyHelp: {
         tooltip:
-          'Leave empty for simple confirmation. Set a value (e.g. entity name) to require the user to type it before confirming.',
+          'Set a value (e.g. entity name) to require the user to type it before confirming.',
       },
       /* wwEditor:end */
     },
@@ -216,8 +228,7 @@ export default {
       /* wwEditor:start */
       bindingValidation: {
         type: 'string',
-        tooltip:
-          'Label above the typed confirmation input. Supports HTML.',
+        tooltip: 'Label above the typed confirmation input. Supports HTML.',
       },
       /* wwEditor:end */
     },
@@ -247,11 +258,11 @@ export default {
       bindingValidation: {
         type: 'string',
         tooltip:
-          'Action identifier passed in the confirm event. Use in your workflow to route to the correct action.',
+          'Action identifier passed in the confirm event for workflow routing.',
       },
       propertyHelp: {
         tooltip:
-          'Included in the confirm trigger event. Use it in your workflow to determine which action to take (e.g. "remove_branch", "deactivate").',
+          'Included in the confirm trigger event. Use in your workflow to route actions (e.g. "remove_branch").',
       },
       /* wwEditor:end */
     },
@@ -284,9 +295,13 @@ export default {
       /* wwEditor:end */
     },
 
-    // ── Style ──
+    // ═══════════════════════════════════════
+    // STYLE TAB — Visual customization
+    // ═══════════════════════════════════════
+
+    // ── Panel ──
     modalMaxWidth: {
-      label: { en: 'Modal Max Width' },
+      label: { en: 'Max Width' },
       type: 'Length',
       section: 'style',
       defaultValue: '448px',
@@ -294,7 +309,188 @@ export default {
       /* wwEditor:start */
       bindingValidation: {
         type: 'string',
-        tooltip: 'Maximum width of the modal panel (e.g. 448px, 32rem)',
+        tooltip: 'Maximum width of the modal panel',
+      },
+      /* wwEditor:end */
+    },
+    borderRadius: {
+      label: { en: 'Border Radius' },
+      type: 'Length',
+      section: 'style',
+      defaultValue: '12px',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Border radius of the modal panel',
+      },
+      /* wwEditor:end */
+    },
+    panelBackground: {
+      label: { en: 'Panel Background' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: '#ffffff',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Background color of the modal panel',
+      },
+      /* wwEditor:end */
+    },
+
+    // ── Backdrop ──
+    backdropColor: {
+      label: { en: 'Backdrop Color' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: 'rgba(0,0,0,0.4)',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Backdrop overlay color (use rgba for opacity)',
+      },
+      /* wwEditor:end */
+    },
+    backdropBlur: {
+      label: { en: 'Backdrop Blur' },
+      type: 'Length',
+      section: 'style',
+      defaultValue: '2px',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Backdrop blur intensity',
+      },
+      /* wwEditor:end */
+    },
+
+    // ── Typography ──
+    titleColor: {
+      label: { en: 'Title Color' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: '#111827',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Title text color',
+      },
+      /* wwEditor:end */
+    },
+    titleFontSize: {
+      label: { en: 'Title Font Size' },
+      type: 'Length',
+      section: 'style',
+      defaultValue: '18px',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Title font size',
+      },
+      /* wwEditor:end */
+    },
+    subtitleColor: {
+      label: { en: 'Subtitle Color' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: '#6b7280',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Subtitle text color',
+      },
+      /* wwEditor:end */
+    },
+
+    // ── Footer ──
+    footerBorderColor: {
+      label: { en: 'Footer Border Color' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: '#f3f4f6',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Color of the divider line above the footer',
+      },
+      /* wwEditor:end */
+    },
+    footerBackground: {
+      label: { en: 'Footer Background' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: 'transparent',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Background color of the footer area',
+      },
+      /* wwEditor:end */
+    },
+
+    // ── Buttons ──
+    confirmBtnBorderRadius: {
+      label: { en: 'Confirm Btn Radius' },
+      type: 'Length',
+      section: 'style',
+      defaultValue: '8px',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Border radius of the confirm button',
+      },
+      /* wwEditor:end */
+    },
+    cancelBtnColor: {
+      label: { en: 'Cancel Btn Color' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: '#4b5563',
+      bindable: true,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Text color of the cancel button',
+      },
+      /* wwEditor:end */
+    },
+
+    // ── Input ──
+    inputBorderRadius: {
+      label: { en: 'Input Border Radius' },
+      type: 'Length',
+      section: 'style',
+      defaultValue: '8px',
+      bindable: true,
+      hidden: (content) => !content?.requireTyped,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Border radius of the typed confirmation input',
+      },
+      /* wwEditor:end */
+    },
+    inputBorderColor: {
+      label: { en: 'Input Border Color' },
+      type: 'Color',
+      section: 'style',
+      defaultValue: '#d1d5db',
+      bindable: true,
+      hidden: (content) => !content?.requireTyped,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Border color of the typed confirmation input',
       },
       /* wwEditor:end */
     },
