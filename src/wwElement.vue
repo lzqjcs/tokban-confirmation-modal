@@ -11,33 +11,31 @@
         :class="{ closing: isClosing }"
         :style="panelStyle"
       >
-        <!-- Header with icon -->
+        <!-- ═══ Header ═══ -->
         <div class="tokban-modal-header">
           <div class="tokban-modal-header-row">
+            <!-- Icon circle: styled by iconColor, user drops icon inside -->
             <div class="tokban-modal-icon-wrap" :style="iconWrapStyle">
-              <svg v-if="currentIcon === 'trash'" class="tokban-modal-icon-svg" :style="iconColorStyle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-              </svg>
-              <svg v-else-if="currentIcon === 'warning'" class="tokban-modal-icon-svg" :style="iconColorStyle" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-              </svg>
-              <svg v-else-if="currentIcon === 'building'" class="tokban-modal-icon-svg" :style="iconColorStyle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-              </svg>
-              <svg v-else-if="currentIcon === 'check'" class="tokban-modal-icon-svg" :style="iconColorStyle" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
+              <wwLayout
+                path="iconContent"
+                class="tokban-modal-icon-dropzone"
+              />
             </div>
-            <div class="tokban-modal-title-group">
-              <h3 class="tokban-modal-title">{{ content?.title || '' }}</h3>
-              <p v-if="content?.subtitle" class="tokban-modal-subtitle">{{ content.subtitle }}</p>
+
+            <!-- Title area: user drops Text elements for title + subtitle -->
+            <div class="tokban-modal-title-area">
+              <wwLayout
+                path="titleContent"
+                direction="column"
+                class="tokban-modal-title-dropzone"
+              />
             </div>
           </div>
         </div>
 
-        <!-- Body -->
+        <!-- ═══ Body ═══ -->
         <div class="tokban-modal-body">
-          <!-- Dropzone: drag & drop any WeWeb elements here -->
+          <!-- Dropzone: drag & drop any WeWeb elements -->
           <wwLayout
             path="bodyContent"
             direction="column"
@@ -69,19 +67,29 @@
           </div>
         </div>
 
-        <!-- Footer -->
+        <!-- ═══ Footer ═══ -->
         <div class="tokban-modal-footer">
-          <button class="tokban-modal-cancel-btn" @click="handleCancel">
-            {{ content?.cancelText || 'Cancel' }}
-          </button>
-          <button
-            class="tokban-modal-confirm-btn"
-            :disabled="!confirmEnabled"
-            :style="confirmBtnStyle"
-            @click="handleConfirm"
-          >
-            {{ content?.confirmText || 'Confirm' }}
-          </button>
+          <!-- Optional: extra footer content dropzone -->
+          <wwLayout
+            path="footerContent"
+            direction="row"
+            class="tokban-modal-footer-dropzone"
+          />
+
+          <!-- Built-in buttons -->
+          <div class="tokban-modal-footer-buttons">
+            <button class="tokban-modal-cancel-btn" @click="handleCancel">
+              {{ content?.cancelText || 'Cancel' }}
+            </button>
+            <button
+              class="tokban-modal-confirm-btn"
+              :disabled="!confirmEnabled"
+              :style="confirmBtnStyle"
+              @click="handleConfirm"
+            >
+              {{ content?.confirmText || 'Confirm' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -96,13 +104,6 @@ const ICON_BG_MAP = {
   blue: '#eff6ff',
   green: '#f0fdf4',
   amber: '#fffbeb',
-};
-
-const ICON_COLOR_MAP = {
-  red: '#dc2626',
-  blue: '#2563eb',
-  green: '#16a34a',
-  amber: '#d97706',
 };
 
 const BTN_COLOR_MAP = {
@@ -145,15 +146,12 @@ export default {
     const isClosing = ref(false);
     const typedInputRef = ref(null);
 
-    // ── CSS Variables (set on root, cascade to all children) ──
+    // ── CSS Variables ──
     const rootCssVars = computed(() => ({
       '--backdrop-color': props.content?.backdropColor || 'rgba(0,0,0,0.4)',
       '--backdrop-blur': props.content?.backdropBlur || '2px',
       '--panel-radius': props.content?.borderRadius || '12px',
       '--panel-bg': props.content?.panelBackground || '#ffffff',
-      '--title-color': props.content?.titleColor || '#111827',
-      '--title-size': props.content?.titleFontSize || '18px',
-      '--subtitle-color': props.content?.subtitleColor || '#6b7280',
       '--footer-border': props.content?.footerBorderColor || '#f3f4f6',
       '--footer-bg': props.content?.footerBackground || 'transparent',
       '--btn-radius': props.content?.confirmBtnBorderRadius || '8px',
@@ -163,15 +161,9 @@ export default {
     }));
 
     // ── Computed ──
-    const currentIcon = computed(() => props.content?.icon || 'warning');
-
     const iconWrapStyle = computed(() => ({
       backgroundColor:
         ICON_BG_MAP[props.content?.iconColor] || ICON_BG_MAP.red,
-    }));
-
-    const iconColorStyle = computed(() => ({
-      color: ICON_COLOR_MAP[props.content?.iconColor] || ICON_COLOR_MAP.red,
     }));
 
     const panelStyle = computed(() => ({
@@ -212,7 +204,9 @@ export default {
         isClosing.value = false;
         setIsOpen(false);
         setTypedValue('');
-        emit('trigger-event', { name: 'close', event: { reason } });
+        if (reason !== 'external') {
+          emit('trigger-event', { name: 'close', event: { reason } });
+        }
       }, 150);
     };
 
@@ -223,9 +217,7 @@ export default {
         if (newVal && !showModal.value) {
           openModal();
         } else if (!newVal && showModal.value && !isClosing.value) {
-          backdropActive.value = false;
-          showModal.value = false;
-          setIsOpen(false);
+          closeModal('external');
         }
       },
       { immediate: true }
@@ -300,9 +292,7 @@ export default {
       isClosing,
       typedInputRef,
       rootCssVars,
-      currentIcon,
       iconWrapStyle,
-      iconColorStyle,
       panelStyle,
       confirmBtnStyle,
       confirmEnabled,
@@ -391,50 +381,83 @@ export default {
 
 .tokban-modal-header-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
 }
 
+/* Icon circle — styled by iconColor, user drops icon inside */
 .tokban-modal-icon-wrap {
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
-.tokban-modal-icon-svg {
-  width: 20px;
-  height: 20px;
+.tokban-modal-icon-dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.tokban-modal-title-group {
+/* wwEditor:start */
+.tokban-modal-icon-dropzone:empty::after {
+  content: '+';
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 18px;
+  font-weight: 300;
+  pointer-events: none;
+}
+/* wwEditor:end */
+
+/* Title area — user drops Text elements for title + subtitle */
+.tokban-modal-title-area {
+  flex: 1;
   min-width: 0;
 }
 
-.tokban-modal-title {
-  font-size: var(--title-size);
-  font-weight: 700;
-  color: var(--title-color);
-  margin: 0;
-  line-height: 1.3;
+.tokban-modal-title-dropzone {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-.tokban-modal-subtitle {
-  font-size: 14px;
-  color: var(--subtitle-color);
-  margin: 2px 0 0;
-  line-height: 1.4;
+/* wwEditor:start */
+.tokban-modal-title-dropzone:empty {
+  min-height: 40px;
+  border: 2px dashed #d0d0d0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.tokban-modal-title-dropzone:empty::after {
+  content: 'Drop title / subtitle here';
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+  pointer-events: none;
+}
+
+.tokban-modal-title-dropzone:hover:empty {
+  border-color: #007aff;
+  background: rgba(0, 122, 255, 0.04);
+}
+/* wwEditor:end */
 
 /* ── Body ── */
 .tokban-modal-body {
   padding: 16px 24px;
 }
 
-/* Dropzone: renders dropped elements */
 .tokban-modal-body-dropzone {
   min-height: 0;
 }
@@ -467,7 +490,6 @@ export default {
 .tokban-modal-body-dropzone:not(:empty) {
   display: flex;
   flex-direction: column;
-  gap: 0px;
 }
 
 /* Optional HTML body */
@@ -540,6 +562,50 @@ export default {
   border-top: 1px solid var(--footer-border);
   background: var(--footer-bg);
   border-radius: 0 0 var(--panel-radius) var(--panel-radius);
+}
+
+/* Footer dropzone for optional extra content */
+.tokban-modal-footer-dropzone {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+/* wwEditor:start */
+.tokban-modal-footer-dropzone:empty {
+  min-height: 32px;
+  min-width: 48px;
+  border: 2px dashed #d0d0d0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: auto;
+}
+
+.tokban-modal-footer-dropzone:empty::after {
+  content: '+';
+  color: #999;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.tokban-modal-footer-dropzone:hover:empty {
+  border-color: #007aff;
+}
+/* wwEditor:end */
+
+.tokban-modal-footer-dropzone:not(:empty) {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tokban-modal-footer-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .tokban-modal-cancel-btn {

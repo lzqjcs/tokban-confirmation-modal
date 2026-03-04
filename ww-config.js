@@ -29,7 +29,28 @@ export default {
   ],
   properties: {
     // ═══════════════════════════════════════
-    // SETTINGS TAB — Functional properties
+    // DROPZONES — Appear in the element tree
+    // ═══════════════════════════════════════
+
+    iconContent: {
+      hidden: true,
+      defaultValue: [],
+    },
+    titleContent: {
+      hidden: true,
+      defaultValue: [],
+    },
+    bodyContent: {
+      hidden: true,
+      defaultValue: [],
+    },
+    footerContent: {
+      hidden: true,
+      defaultValue: [],
+    },
+
+    // ═══════════════════════════════════════
+    // SETTINGS TAB
     // ═══════════════════════════════════════
 
     // ── Visibility ──
@@ -47,35 +68,14 @@ export default {
       },
       propertyHelp: {
         tooltip:
-          'Bind this to a variable and set it to true from a workflow to show the modal.',
+          'Bind to a variable and set it to true from a workflow to show the modal.',
       },
       /* wwEditor:end */
     },
 
-    // ── Icon ──
-    icon: {
-      label: { en: 'Icon' },
-      type: 'TextSelect',
-      section: 'settings',
-      options: {
-        options: [
-          { value: 'warning', label: 'Warning' },
-          { value: 'trash', label: 'Trash' },
-          { value: 'building', label: 'Building' },
-          { value: 'check', label: 'Check' },
-        ],
-      },
-      defaultValue: 'warning',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'Icon type: warning | trash | building | check',
-      },
-      /* wwEditor:end */
-    },
+    // ── Icon circle color ──
     iconColor: {
-      label: { en: 'Icon Color' },
+      label: { en: 'Icon Circle Color' },
       type: 'TextSelect',
       section: 'settings',
       options: {
@@ -91,46 +91,16 @@ export default {
       /* wwEditor:start */
       bindingValidation: {
         type: 'string',
-        tooltip: 'Icon color theme: red | amber | blue | green',
+        tooltip: 'Icon circle background: red | amber | blue | green',
+      },
+      propertyHelp: {
+        tooltip:
+          'Sets the background color of the icon circle. Drop your icon element into the iconContent area in the tree.',
       },
       /* wwEditor:end */
     },
 
-    // ── Content ──
-    title: {
-      label: { en: 'Title' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: 'Confirm Action',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'Modal title text',
-      },
-      /* wwEditor:end */
-    },
-    subtitle: {
-      label: { en: 'Subtitle' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'Optional subtitle below the title. Leave empty to hide.',
-      },
-      /* wwEditor:end */
-    },
-
-    // ── Body Dropzone (hidden — used by wwLayout) ──
-    bodyContent: {
-      hidden: true,
-      defaultValue: [],
-    },
-
-    // ── Body HTML (optional fallback for dynamic content) ──
+    // ── Body HTML (optional supplement to dropzone) ──
     bodyHtml: {
       label: { en: 'Body HTML (optional)' },
       type: 'Text',
@@ -141,11 +111,11 @@ export default {
       bindingValidation: {
         type: 'string',
         tooltip:
-          'Optional HTML content rendered below the dropzone body. Use for dynamic content from workflows.',
+          'Optional HTML rendered below the body dropzone. For dynamic content from workflows.',
       },
       propertyHelp: {
         tooltip:
-          'For static content, use the dropzone in the modal body instead. Use this for dynamic HTML built in workflows.',
+          'For static content, drop elements into bodyContent in the tree. Use this for dynamic HTML built in workflows.',
       },
       /* wwEditor:end */
     },
@@ -296,7 +266,7 @@ export default {
     },
 
     // ═══════════════════════════════════════
-    // STYLE TAB — Visual customization
+    // STYLE TAB
     // ═══════════════════════════════════════
 
     // ── Panel ──
@@ -364,47 +334,6 @@ export default {
       bindingValidation: {
         type: 'string',
         tooltip: 'Backdrop blur intensity',
-      },
-      /* wwEditor:end */
-    },
-
-    // ── Typography ──
-    titleColor: {
-      label: { en: 'Title Color' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: '#111827',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'Title text color',
-      },
-      /* wwEditor:end */
-    },
-    titleFontSize: {
-      label: { en: 'Title Font Size' },
-      type: 'Length',
-      section: 'style',
-      defaultValue: '18px',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'Title font size',
-      },
-      /* wwEditor:end */
-    },
-    subtitleColor: {
-      label: { en: 'Subtitle Color' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: '#6b7280',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'Subtitle text color',
       },
       /* wwEditor:end */
     },
