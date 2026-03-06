@@ -316,6 +316,9 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 .tk-root * { font-family: 'Inter', system-ui, -apple-system, sans-serif; box-sizing: border-box; }
 
 /* ── Backdrop ── */
@@ -344,7 +347,7 @@ export default {
 
 /* ── Header ── */
 .tk-header { padding: 24px 24px 8px; }
-.tk-header-row { display: flex; align-items: flex-start; gap: 14px; }
+.tk-header-row { display: flex; align-items: center; gap: 14px; }
 
 /* ── Icon ── */
 .tk-icon-circle {
@@ -364,9 +367,9 @@ export default {
 /* wwEditor:end */
 
 /* ── Title ── */
-.tk-title-area { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding-top: 2px; }
+.tk-title-area { flex: 1; min-width: 0; display: flex; flex-direction: column; padding-top: 2px; }
 .tk-title   { margin: 0; font-size: 16px; font-weight: 700; color: #2C3131; line-height: 1.3; }
-.tk-subtitle { margin: 0; font-size: 13px; font-weight: 400; color: #A8A8A8; line-height: 1.4; }
+.tk-subtitle { margin: 4px 0 0; font-size: 13px; font-weight: 400; color: #A8A8A8; line-height: 1.4; }
 
 /* ── Body ── */
 .tk-body { padding: 12px 24px 16px; display: flex; flex-direction: column; gap: 12px; }
