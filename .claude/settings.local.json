@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.weweb.io)",
+      "WebFetch(domain:developer.weweb.io)",
+      "WebFetch(domain:community.weweb.io)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}
