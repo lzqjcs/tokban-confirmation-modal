@@ -174,28 +174,35 @@ export default {
     }));
 
     // ── Icon circle — accepts hex directly ──
-    const iconCircleStyle = computed(() => ({
-      backgroundColor: props.content?.iconBg || lightenHex(props.content?.iconColor || '#1565C0', 0.9),
-    }));
+    // Uses nullish + length check to guard against WeWeb returning '' for unbound Color props
+    const iconCircleStyle = computed(() => {
+      const bg    = typeof props.content?.iconBg    === 'string' && props.content.iconBg.length    > 2 ? props.content.iconBg    : null;
+      const color = typeof props.content?.iconColor === 'string' && props.content.iconColor.length > 2 ? props.content.iconColor : '#1565C0';
+      return { backgroundColor: bg ?? lightenHex(color, 0.9) };
+    });
 
-    const iconGlyphStyle = computed(() => ({
-      color:    props.content?.iconColor || '#1565C0',
-      fontSize: props.content?.iconSize  || '20px',
-    }));
+    const iconGlyphStyle = computed(() => {
+      const color = typeof props.content?.iconColor === 'string' && props.content.iconColor.length > 2 ? props.content.iconColor : '#1565C0';
+      return { color, fontSize: props.content?.iconSize || '20px' };
+    });
 
     // ── Confirm button — accepts hex directly ──
-    const confirmBtnStyle = computed(() => ({
-      backgroundColor: props.content?.confirmColor || '#F08227',
-    }));
+    const confirmBtnStyle = computed(() => {
+      const c = (typeof props.content?.confirmColor === 'string' && props.content.confirmColor.length > 2)
+        ? props.content.confirmColor : '#F08227';
+      return { backgroundColor: c };
+    });
 
     // ── Banners — auto-derive bg/border as tints of the base hex ──
     const infoBannerStyle = computed(() => {
-      const c = props.content?.infoBannerColor || '#1565C0';
+      const c = (typeof props.content?.infoBannerColor === 'string' && props.content.infoBannerColor.length > 2)
+        ? props.content.infoBannerColor : '#1565C0';
       return { backgroundColor: lightenHex(c, 0.92), color: c, borderColor: lightenHex(c, 0.7) };
     });
 
     const warningBannerStyle = computed(() => {
-      const c = props.content?.warningBannerColor || '#FFB300';
+      const c = (typeof props.content?.warningBannerColor === 'string' && props.content.warningBannerColor.length > 2)
+        ? props.content.warningBannerColor : '#FFB300';
       return { backgroundColor: lightenHex(c, 0.92), color: c, borderColor: lightenHex(c, 0.7) };
     });
 
@@ -344,6 +351,7 @@ export default {
   width: 44px; height: 44px; min-width: 44px;
   border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
+  background-color: #E8F1FA; /* safe neutral fallback — overridden by :style binding */
 }
 .tk-icon-glyph {
   font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif;
