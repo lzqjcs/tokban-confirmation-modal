@@ -1,178 +1,125 @@
 <template>
-  <div class="tokban-modal-root" :style="rootCssVars">
+  <div class="tk-root" :style="cssVars">
     <div
       v-if="showModal"
-      class="tokban-modal-backdrop"
+      class="tk-backdrop"
       :class="{ active: backdropActive }"
       @click.self="handleBackdropClick"
     >
-      <div
-        class="tokban-modal-panel"
-        :class="{ closing: isClosing }"
-        :style="panelStyle"
-      >
-        <!-- ═══ Header ═══ -->
-        <div class="tokban-modal-header">
-          <div class="tokban-modal-header-row">
-            <!-- Icon circle -->
-            <div class="tokban-modal-icon-wrap" :style="iconWrapStyle">
-              <wwLayout
-                path="iconContent"
-                class="tokban-modal-icon-dropzone"
-              />
-            </div>
+      <div class="tk-panel" :class="{ closing: isClosing }">
 
-            <!-- Title area -->
-            <div class="tokban-modal-title-area">
-              <wwLayout
-                path="titleContent"
-                direction="column"
-                class="tokban-modal-title-dropzone"
-              />
+        <!-- ═══ HEADER ═══ -->
+        <div class="tk-header">
+          <div class="tk-header-row">
+            <!-- Icon circle -->
+            <div class="tk-icon-circle" :style="iconCircleStyle">
+              <span v-if="content?.iconName" class="tk-icon-glyph" :style="iconGlyphStyle">
+                {{ content.iconName }}
+              </span>
+              <wwLayout v-else path="iconContent" class="tk-icon-dropzone" />
+            </div>
+            <!-- Title + subtitle -->
+            <div class="tk-title-area">
+              <p v-if="content?.title"    class="tk-title"    v-html="content.title"></p>
+              <p v-if="content?.subtitle" class="tk-subtitle" v-html="content.subtitle"></p>
             </div>
           </div>
         </div>
 
-        <!-- ═══ Body ═══ -->
-        <div class="tokban-modal-body">
+        <!-- ═══ BODY ═══ -->
+        <div class="tk-body">
 
           <!-- Info banner -->
-          <div
-            v-if="content?.infoBannerText"
-            class="tokban-modal-banner tokban-modal-banner--info"
-            :style="infoBannerStyle"
-          >
+          <div v-if="content?.infoBannerText" class="tk-banner" :style="infoBannerStyle">
+            <svg class="tk-banner-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
+            </svg>
             <span v-html="content.infoBannerText"></span>
           </div>
 
-          <!-- Body dropzone -->
-          <wwLayout
-            path="bodyContent"
-            direction="column"
-            class="tokban-modal-body-dropzone"
-          />
+          <!-- Body text -->
+          <div v-if="content?.bodyHtml" class="tk-body-html" v-html="content.bodyHtml"></div>
 
-          <!-- Dynamic HTML body -->
-          <div
-            v-if="content?.bodyHtml"
-            class="tokban-modal-body-html"
-            v-html="content.bodyHtml"
-          ></div>
-
-          <!-- ── Checklist Items ── -->
-          <div
-            v-if="checklistItems.length"
-            class="tokban-modal-checklist"
-          >
-            <p
-              v-if="content?.checklistTitle"
-              class="tokban-modal-checklist-title"
-              v-html="content.checklistTitle"
-            ></p>
-            <div
-              v-for="item in checklistItems"
-              :key="item.id"
-              class="tokban-modal-checklist-row"
-            >
-              <span
-                class="tokban-modal-checklist-icon"
-                :style="{ color: item.iconColor || content?.checklistDefaultIconColor || '#2563EB' }"
-              >
-                <svg v-if="!item.icon || item.icon === 'check'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+          <!-- Checklist items -->
+          <div v-if="checklistItems.length" class="tk-checklist">
+            <p v-if="content?.checklistTitle" class="tk-checklist-title" v-html="content.checklistTitle"></p>
+            <div v-for="item in checklistItems" :key="item.id || item.text" class="tk-checklist-row">
+              <span class="tk-checklist-icon" :style="{ color: item.iconColor || content?.checklistIconColor || '#E53935' }">
+                <svg v-if="item.icon === 'x'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd"/>
                 </svg>
-                <svg v-else-if="item.icon === 'warning'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                <svg v-else-if="item.icon === 'warning'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
                 </svg>
-                <svg v-else-if="item.icon === 'info'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/>
                 </svg>
               </span>
-              <span class="tokban-modal-checklist-text" v-html="item.text"></span>
+              <span class="tk-checklist-text" v-html="item.text"></span>
             </div>
           </div>
 
-          <!-- Warning banner -->
-          <div
-            v-if="content?.warningBannerText"
-            class="tokban-modal-banner tokban-modal-banner--warning"
-            :style="warningBannerStyle"
-          >
-            <svg class="tokban-modal-banner-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+          <!-- Warning / danger banner -->
+          <div v-if="content?.warningBannerText" class="tk-banner" :style="warningBannerStyle">
+            <svg class="tk-banner-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
             </svg>
             <span v-html="content.warningBannerText"></span>
           </div>
 
-          <!-- ── Free-text input (branch name etc.) ── -->
-          <!-- Shown when inputLabel is set AND requireTyped is NOT set -->
-          <div
-            v-if="content?.inputLabel && !content?.requireTyped"
-            class="tokban-modal-input-section"
-          >
-            <label class="tokban-modal-input-label">{{ content.inputLabel }}</label>
+          <!-- ── Free-text input (e.g. new branch name) ── -->
+          <!-- Shows when inputLabel is set AND requireTyped is NOT set -->
+          <div v-if="content?.inputLabel && !content?.requireTyped" class="tk-input-section">
+            <label class="tk-input-label">{{ content.inputLabel }}</label>
             <input
               ref="freeInputRef"
               type="text"
-              class="tokban-modal-typed-input"
+              class="tk-typed-input"
               :placeholder="content?.inputPlaceholder || ''"
               :value="inputValue"
               @input="handleFreeInput"
             />
-            <p v-if="content?.inputHelp" class="tokban-modal-input-help">
-              {{ content.inputHelp }}
-            </p>
+            <p v-if="content?.inputHelp" class="tk-input-help">{{ content.inputHelp }}</p>
           </div>
 
-          <!-- ── Typed confirmation ── -->
-          <div v-if="content?.requireTyped" class="tokban-modal-typed-section">
-            <label
-              v-if="content?.typedLabel"
-              class="tokban-modal-typed-label"
-              v-html="content.typedLabel"
-            ></label>
+          <!-- Typed confirmation -->
+          <div v-if="content?.requireTyped" class="tk-typed-section">
+            <label v-if="content?.typedLabel" class="tk-typed-label" v-html="content.typedLabel"></label>
             <input
               ref="typedInputRef"
               type="text"
-              class="tokban-modal-typed-input"
+              class="tk-typed-input"
               :class="{ 'is-valid': typedIsValid, 'is-invalid': typedValue && !typedIsValid }"
               :placeholder="content?.typedPlaceholder || 'Type to confirm'"
               :value="typedValue"
               @input="handleTypedInput"
             />
-            <p v-if="typedValue && !typedIsValid" class="tokban-modal-typed-hint">
-              {{ typedHintText }}
-            </p>
+            <p v-if="typedValue && !typedIsValid" class="tk-typed-hint">{{ typedHintText }}</p>
           </div>
+
         </div>
 
-        <!-- ═══ Footer ═══ -->
-        <div class="tokban-modal-footer">
-          <wwLayout
-            path="footerContent"
-            direction="row"
-            class="tokban-modal-footer-dropzone"
-          />
-          <div class="tokban-modal-footer-buttons">
-            <button
-              v-if="content?.showCancelButton !== false"
-              class="tokban-modal-cancel-btn"
-              :disabled="isLoading"
-              @click="handleCancel"
-            >
-              {{ content?.cancelText || 'Cancel' }}
-            </button>
-            <button
-              class="tokban-modal-confirm-btn"
-              :disabled="!confirmEnabled || isLoading"
-              :style="confirmBtnStyle"
-              @click="handleConfirm"
-            >
-              <span v-if="isLoading" class="tokban-modal-spinner"></span>
-              <span>{{ isLoading ? (content?.loadingText || 'Processing...') : (content?.confirmText || 'Confirm') }}</span>
-            </button>
-          </div>
+        <!-- ═══ FOOTER ═══ -->
+        <div class="tk-footer">
+          <button
+            v-if="content?.showCancelButton !== false"
+            class="tk-btn-cancel"
+            :disabled="isLoading"
+            @click="handleCancel"
+          >
+            {{ content?.cancelText || 'Cancel' }}
+          </button>
+          <button
+            class="tk-btn-confirm"
+            :disabled="!confirmEnabled || isLoading"
+            :style="confirmBtnStyle"
+            @click="handleConfirm"
+          >
+            <span v-if="isLoading" class="tk-spinner"></span>
+            <span>{{ isLoading ? (content?.loadingText || 'Processing...') : (content?.confirmText || 'Confirm') }}</span>
+          </button>
         </div>
+
       </div>
     </div>
   </div>
@@ -181,37 +128,25 @@
 <script>
 import { computed, ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 
-// ── v12 color maps: string keys match TextSelect options in ww-config.js ──
-const ICON_BG_MAP = {
-  red:    '#fef2f2',
-  blue:   '#eff6ff',
-  green:  '#f0fdf4',
-  amber:  '#fffbeb',
-  orange: '#fff3e8',
-  purple: '#f0e8f8',
-};
-
-const BTN_COLOR_MAP = {
-  red:    '#ef4444',
-  blue:   '#2563eb',
-  green:  '#16a34a',
-  amber:  '#d97706',
-  orange: '#f08227',
-  purple: '#4f0ba7',
-};
-
-const BANNER_STYLES = {
-  blue:   { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
-  green:  { bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
-  amber:  { bg: '#fffbeb', text: '#b45309', border: '#fde68a' },
-  red:    { bg: '#fef2f2', text: '#b91c1c', border: '#fecaca' },
-  orange: { bg: '#fff3e8', text: '#c05c00', border: '#fed7aa' },
-  purple: { bg: '#f0e8f8', text: '#4f0ba7', border: '#d8b4fe' },
-};
+// ── Hex helpers — no keyword maps, pure hex in / hex out ──
+function isHex(v) { return typeof v === 'string' && /^#([0-9a-fA-F]{3,8})$/.test(v.trim()); }
+function hexToRgb(hex) {
+  let h = hex.replace('#', '').trim();
+  if (h.length === 3) h = h.split('').map(c => c + c).join('');
+  if (h.length === 8) h = h.slice(0, 6);
+  const n = parseInt(h, 16);
+  if (isNaN(n)) return { r: 0, g: 0, b: 0 };
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function lightenHex(hex, factor) {
+  if (!isHex(hex)) return hex;
+  const { r, g, b } = hexToRgb(hex);
+  return `rgb(${Math.round(r+(255-r)*factor)},${Math.round(g+(255-g)*factor)},${Math.round(b+(255-b)*factor)})`;
+}
 
 export default {
   props: {
-    uid: { type: String, required: true },
+    uid:     { type: String, required: true },
     content: { type: Object, required: true },
     /* wwEditor:start */
     wwEditorState: { type: Object, required: true },
@@ -220,133 +155,112 @@ export default {
   emits: ['trigger-event'],
   setup(props, { emit }) {
 
-    // ── Internal Variables (readable in WeWeb workflows) ──
-    const { value: isOpen, setValue: setIsOpen } =
-      wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'isOpen', type: 'boolean', defaultValue: false });
+    // ── Internal variables ──
+    const { value: isOpen,    setValue: setIsOpen    } = wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'isOpen',    type: 'boolean', defaultValue: false });
+    const { value: typedValue, setValue: setTypedValue } = wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'typedValue', type: 'string',  defaultValue: '' });
+    const { value: inputValue, setValue: setInputValue } = wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'inputValue', type: 'string',  defaultValue: '' });
+    const { value: isLoading,  setValue: setIsLoading  } = wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'isLoading',  type: 'boolean', defaultValue: false });
+    const { value: confirmEnabledVar, setValue: setConfirmEnabled } = wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'confirmEnabled', type: 'boolean', defaultValue: true });
 
-    const { value: typedValue, setValue: setTypedValue } =
-      wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'typedValue', type: 'string', defaultValue: '' });
-
-    const { value: inputValue, setValue: setInputValue } =
-      wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'inputValue', type: 'string', defaultValue: '' });
-
-    const { value: isLoading, setValue: setIsLoading } =
-      wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'isLoading', type: 'boolean', defaultValue: false });
-
-    const { value: confirmEnabledVar, setValue: setConfirmEnabled } =
-      wwLib.wwVariable.useComponentVariable({ uid: props.uid, name: 'confirmEnabled', type: 'boolean', defaultValue: true });
-
-    // ── Animation State ──
+    // ── Animation state ──
     const showModal      = ref(false);
     const backdropActive = ref(false);
     const isClosing      = ref(false);
     const typedInputRef  = ref(null);
     const freeInputRef   = ref(null);
 
-    // ── CSS Variables ──
-    const rootCssVars = computed(() => ({
-      '--backdrop-color': props.content?.backdropColor           || 'rgba(0,0,0,0.4)',
-      '--backdrop-blur':  props.content?.backdropBlur            || '2px',
-      '--panel-radius':   props.content?.borderRadius            || '12px',
-      '--panel-bg':       props.content?.panelBackground         || '#ffffff',
-      '--footer-border':  props.content?.footerBorderColor       || '#f3f4f6',
-      '--footer-bg':      props.content?.footerBackground        || 'transparent',
-      '--btn-radius':     props.content?.confirmBtnBorderRadius  || '8px',
-      '--cancel-color':   props.content?.cancelBtnColor          || '#4b5563',
-      '--input-radius':   props.content?.inputBorderRadius       || '8px',
-      '--input-border':   props.content?.inputBorderColor        || '#d1d5db',
-      '--checklist-gap':  props.content?.checklistGap            || '10px',
+    // ── CSS vars ──
+    const cssVars = computed(() => ({
+      '--tk-panel-radius':  props.content?.borderRadius || '12px',
+      '--tk-panel-bg':      props.content?.panelBg      || '#ffffff',
+      '--tk-footer-border': props.content?.footerBorder || '#F4F4F4',
+      '--tk-btn-radius':    props.content?.btnRadius     || '8px',
+      '--tk-cancel-color':  props.content?.cancelColor   || '#616161',
+      '--tk-input-radius':  props.content?.inputRadius   || '8px',
+      '--tk-input-border':  props.content?.inputBorder   || '#C9C9C9',
+      '--tk-max-width':     props.content?.maxWidth      || '448px',
+      '--tk-checklist-gap': props.content?.checklistGap  || '10px',
     }));
 
-    // ── Computed Styles ──
-    const iconWrapStyle = computed(() => ({
-      backgroundColor: ICON_BG_MAP[props.content?.iconColor] || ICON_BG_MAP.blue,
-    }));
+    // ── Icon circle — hex directly ──
+    const iconCircleStyle = computed(() => {
+      const bg    = typeof props.content?.iconBg    === 'string' && props.content.iconBg.length    > 2 ? props.content.iconBg    : null;
+      const color = typeof props.content?.iconColor === 'string' && props.content.iconColor.length > 2 ? props.content.iconColor : '#1565C0';
+      return { backgroundColor: bg ?? lightenHex(color, 0.9) };
+    });
+    const iconGlyphStyle = computed(() => {
+      const color = typeof props.content?.iconColor === 'string' && props.content.iconColor.length > 2 ? props.content.iconColor : '#1565C0';
+      return { color, fontSize: props.content?.iconSize || '20px' };
+    });
 
-    const panelStyle = computed(() => ({
-      maxWidth: props.content?.modalMaxWidth || '448px',
-    }));
+    // ── Confirm button ──
+    const confirmBtnStyle = computed(() => {
+      const c = (typeof props.content?.confirmColor === 'string' && props.content.confirmColor.length > 2) ? props.content.confirmColor : '#F08227';
+      return { backgroundColor: c };
+    });
 
-    const confirmBtnStyle = computed(() => ({
-      backgroundColor: BTN_COLOR_MAP[props.content?.confirmColor] || BTN_COLOR_MAP.blue,
-    }));
+    // ── Banners ──
+    const infoBannerStyle = computed(() => {
+      const c = (typeof props.content?.infoBannerColor === 'string' && props.content.infoBannerColor.length > 2) ? props.content.infoBannerColor : '#1565C0';
+      return { backgroundColor: lightenHex(c, 0.92), color: c, borderColor: lightenHex(c, 0.7) };
+    });
+    const warningBannerStyle = computed(() => {
+      const c = (typeof props.content?.warningBannerColor === 'string' && props.content.warningBannerColor.length > 2) ? props.content.warningBannerColor : '#FFB300';
+      return { backgroundColor: lightenHex(c, 0.92), color: c, borderColor: lightenHex(c, 0.7) };
+    });
 
+    // ── Checklist ──
     const checklistItems = computed(() => {
       const items = props.content?.checklistItems;
       if (!Array.isArray(items)) return [];
-      return items.filter(item => item?.text);
+      return items.filter(i => i?.text);
     });
 
-    // ── confirmEnabled logic ──
+    // ── confirmEnabled: typed mode OR free-text input mode OR simple ──
     const confirmEnabled = computed(() => {
-      // requireTyped mode: user must match a specific string
       if (props.content?.requireTyped) {
         return (typedValue.value || '').trim() === props.content.requireTyped;
       }
-      // Free-text input mode: just needs to be non-empty
       if (props.content?.inputLabel) {
         return (inputValue.value || '').trim().length > 0;
       }
-      // Simple confirm: always enabled
       return true;
     });
-
-    watch(confirmEnabled, (val) => setConfirmEnabled(val), { immediate: true });
+    watch(confirmEnabled, v => setConfirmEnabled(v), { immediate: true });
 
     const typedIsValid = computed(() => {
-      const required = props.content?.requireTyped;
-      if (!required) return true;
-      return (typedValue.value || '').trim() === required;
+      const req = props.content?.requireTyped;
+      if (!req) return true;
+      return (typedValue.value || '').trim() === req;
     });
-
     const typedHintText = computed(() => {
-      const required = props.content?.requireTyped;
-      if (!required || !typedValue.value) return '';
+      const req = props.content?.requireTyped;
+      if (!req || !typedValue.value) return '';
       const typed = (typedValue.value || '').trim();
-      const req   = required.trim();
       let match = 0;
       for (let i = 0; i < Math.min(typed.length, req.length); i++) {
-        if (typed[i] === req[i]) match++;
-        else break;
+        if (typed[i] === req[i]) match++; else break;
       }
-      if (match === 0 && typed.length > 0) return `Expected: "${req}"`;
-      return `Keep going…`;
+      return match === 0 && typed.length > 0 ? `Expected: "${req}"` : 'Keep going…';
     });
 
-    // ── Banner Styles ──
-    const infoBannerStyle = computed(() => {
-      const key = props.content?.infoBannerColor || 'blue';
-      const s = BANNER_STYLES[key] || BANNER_STYLES.blue;
-      return { backgroundColor: s.bg, color: s.text, borderColor: s.border };
-    });
-
-    const warningBannerStyle = computed(() => {
-      const key = props.content?.warningBannerColor || 'amber';
-      const s = BANNER_STYLES[key] || BANNER_STYLES.amber;
-      return { backgroundColor: s.bg, color: s.text, borderColor: s.border };
-    });
-
-    // ── Open / Close ──
+    // ── Open / close ──
     const openModal = () => {
-      showModal.value  = true;
-      isClosing.value  = false;
+      showModal.value = true;
+      isClosing.value = false;
       setTypedValue('');
       setInputValue('');
       setIsLoading(false);
       setIsOpen(true);
       nextTick(() => {
         backdropActive.value = true;
-        if (props.content?.requireTyped && typedInputRef.value) {
-          typedInputRef.value.focus();
-        } else if (props.content?.inputLabel && freeInputRef.value) {
-          freeInputRef.value.focus();
-        }
+        if (props.content?.requireTyped && typedInputRef.value) typedInputRef.value.focus();
+        else if (props.content?.inputLabel && freeInputRef.value) freeInputRef.value.focus();
       });
     };
-
     const closeModal = (reason) => {
       if (isClosing.value) return;
-      isClosing.value      = true;
+      isClosing.value = true;
       backdropActive.value = false;
       setTimeout(() => {
         showModal.value = false;
@@ -355,40 +269,26 @@ export default {
         setTypedValue('');
         setInputValue('');
         setIsLoading(false);
-        if (reason !== 'external') {
-          emit('trigger-event', { name: 'close', event: { reason } });
-        }
+        if (reason !== 'external') emit('trigger-event', { name: 'close', event: { reason } });
       }, 150);
     };
 
-    // ── Watch visible prop ──
-    watch(
-      () => props.content?.visible,
-      (newVal) => {
-        if (newVal && !showModal.value) openModal();
-        else if (!newVal && showModal.value && !isClosing.value) closeModal('external');
-      },
-      { immediate: true }
-    );
+    watch(() => props.content?.visible, v => {
+      if (v && !showModal.value) openModal();
+      else if (!v && showModal.value && !isClosing.value) closeModal('external');
+    }, { immediate: true });
+    watch(() => props.content?.loading, v => setIsLoading(!!v));
 
-    // ── Watch loading prop ──
-    watch(
-      () => props.content?.loading,
-      (newVal) => { setIsLoading(!!newVal); }
-    );
-
-    // ── Event Handlers ──
+    // ── Handlers ──
     const handleBackdropClick = () => {
       if (isLoading.value) return;
       if (props.content?.closeOnBackdropClick !== false) closeModal('backdrop');
     };
-
     const handleCancel = () => {
       if (isLoading.value) return;
       emit('trigger-event', { name: 'cancel', event: {} });
       closeModal('cancel');
     };
-
     const handleConfirm = () => {
       if (!confirmEnabled.value || isLoading.value) return;
       emit('trigger-event', {
@@ -399,19 +299,14 @@ export default {
           inputValue: inputValue.value || '',
         },
       });
-      if (props.content?.autoLoading !== false) {
-        setIsLoading(true);
-      } else {
-        closeModal('confirm');
-      }
+      if (props.content?.autoLoading !== false) setIsLoading(true);
+      else closeModal('confirm');
     };
-
     const handleTypedInput = (e) => {
       const val = e?.target?.value ?? '';
       setTypedValue(val);
       emit('trigger-event', { name: 'typed-value-change', event: { value: val } });
     };
-
     const handleFreeInput = (e) => {
       const val = e?.target?.value ?? '';
       setInputValue(val);
@@ -420,23 +315,11 @@ export default {
 
     // ── Keyboard ──
     const handleKeydown = (e) => {
-      if (e?.key === 'Escape' && showModal.value && !isLoading.value && props.content?.closeOnEscape !== false) {
-        closeModal('escape');
-      }
-      if (e?.key === 'Enter' && showModal.value && confirmEnabled.value && !isLoading.value && props.content?.confirmOnEnter) {
-        handleConfirm();
-      }
+      if (e?.key === 'Escape' && showModal.value && !isLoading.value && props.content?.closeOnEscape !== false) closeModal('escape');
+      if (e?.key === 'Enter'  && showModal.value && confirmEnabled.value && !isLoading.value && props.content?.confirmOnEnter) handleConfirm();
     };
-
-    onMounted(() => {
-      const frontDoc = wwLib.getFrontDocument();
-      if (frontDoc) frontDoc.addEventListener('keydown', handleKeydown);
-    });
-
-    onBeforeUnmount(() => {
-      const frontDoc = wwLib.getFrontDocument();
-      if (frontDoc) frontDoc.removeEventListener('keydown', handleKeydown);
-    });
+    onMounted(()        => { const d = wwLib.getFrontDocument(); if (d) d.addEventListener('keydown', handleKeydown); });
+    onBeforeUnmount(()  => { const d = wwLib.getFrontDocument(); if (d) d.removeEventListener('keydown', handleKeydown); });
 
     /* wwEditor:start */
     const isEditing = computed(() => props.wwEditorState?.isEditing);
@@ -445,10 +328,11 @@ export default {
     return {
       showModal, backdropActive, isClosing,
       typedInputRef, freeInputRef,
-      rootCssVars, iconWrapStyle, panelStyle, confirmBtnStyle,
-      confirmEnabled, typedValue, typedIsValid, typedHintText,
-      inputValue, isLoading, checklistItems,
-      infoBannerStyle, warningBannerStyle,
+      cssVars, iconCircleStyle, iconGlyphStyle,
+      confirmBtnStyle, infoBannerStyle, warningBannerStyle,
+      checklistItems, confirmEnabled,
+      typedValue, typedIsValid, typedHintText,
+      inputValue, isLoading,
       handleBackdropClick, handleCancel, handleConfirm,
       handleTypedInput, handleFreeInput,
       /* wwEditor:start */
@@ -460,139 +344,130 @@ export default {
 </script>
 
 <style scoped>
-.tokban-modal-root { position: relative; }
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.tk-root * { font-family: 'Inter', system-ui, -apple-system, sans-serif; box-sizing: border-box; }
 
 /* ── Backdrop ── */
-.tokban-modal-backdrop {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--backdrop-color);
-  backdrop-filter: blur(var(--backdrop-blur));
+.tk-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(44,49,49,0.5); backdrop-filter: blur(2px);
   display: flex; align-items: center; justify-content: center;
   padding: 16px; z-index: 9999;
-  opacity: 0; transition: opacity 0.2s ease; pointer-events: none;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
 }
-.tokban-modal-backdrop.active { opacity: 1; pointer-events: auto; }
-
-@keyframes tokban-modal-in  { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes tokban-modal-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(8px) scale(0.98); } }
+.tk-backdrop.active { opacity: 1; pointer-events: auto; }
 
 /* ── Panel ── */
-.tokban-modal-panel {
-  background: var(--panel-bg); border-radius: var(--panel-radius);
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-  width: 100%; animation: tokban-modal-in 0.2s ease-out forwards;
+@keyframes tk-in  { from { opacity:0; transform: translateY(8px) scale(0.98); } to { opacity:1; transform: translateY(0) scale(1); } }
+@keyframes tk-out { from { opacity:1; transform: translateY(0) scale(1); } to { opacity:0; transform: translateY(8px) scale(0.98); } }
+.tk-panel {
+  background: var(--tk-panel-bg); border-radius: var(--tk-panel-radius);
+  box-shadow: 0 20px 60px -10px rgba(44,49,49,0.2), 0 4px 16px -4px rgba(44,49,49,0.1);
+  width: 100%; max-width: var(--tk-max-width);
+  animation: tk-in 0.2s ease-out forwards; overflow: hidden;
 }
-.tokban-modal-panel.closing { animation: tokban-modal-out 0.15s ease-in forwards; }
+.tk-panel.closing { animation: tk-out 0.15s ease-in forwards; }
 
 /* ── Header ── */
-.tokban-modal-header { padding: 24px 24px 8px; }
-.tokban-modal-header-row { display: flex; align-items: flex-start; gap: 12px; }
-.tokban-modal-icon-wrap {
-  width: 40px; height: 40px; min-width: 40px; min-height: 40px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; overflow: hidden;
+.tk-header { padding: 24px 24px 8px; }
+.tk-header-row { display: flex; align-items: center; gap: 14px; }
+
+/* ── Icon ── */
+.tk-icon-circle {
+  width: 44px; height: 44px; min-width: 44px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background-color: #E8F1FA;
 }
-.tokban-modal-icon-dropzone { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.tk-icon-glyph {
+  font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 20px; line-height: 1; user-select: none;
+}
+.tk-icon-dropzone { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
 /* wwEditor:start */
-.tokban-modal-icon-dropzone:empty::after { content: '+'; color: rgba(0,0,0,0.25); font-size: 18px; font-weight: 300; pointer-events: none; }
+.tk-icon-dropzone:empty::after { content: '+'; color: rgba(0,0,0,0.2); font-size: 16px; pointer-events: none; }
 /* wwEditor:end */
-.tokban-modal-title-area { flex: 1; min-width: 0; }
-.tokban-modal-title-dropzone { display: flex; flex-direction: column; min-height: 0; }
-/* wwEditor:start */
-.tokban-modal-title-dropzone:empty { min-height: 40px; border: 2px dashed #d0d0d0; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-.tokban-modal-title-dropzone:empty::after { content: 'Drop title / subtitle here'; color: #999; font-size: 12px; font-style: italic; pointer-events: none; }
-.tokban-modal-title-dropzone:hover:empty { border-color: #007aff; background: rgba(0,122,255,0.04); }
-/* wwEditor:end */
+
+/* ── Title ── */
+.tk-title-area { flex: 1; min-width: 0; display: flex; flex-direction: column; padding-top: 2px; }
+.tk-title    { margin: 0;       font-size: 16px; font-weight: 700; color: #2C3131; line-height: 1.3; }
+.tk-subtitle { margin: 4px 0 0; font-size: 13px; font-weight: 400; color: #A8A8A8; line-height: 1.4; }
 
 /* ── Body ── */
-.tokban-modal-body { padding: 16px 24px; display: flex; flex-direction: column; gap: 12px; }
-.tokban-modal-body-dropzone { min-height: 0; }
-/* wwEditor:start */
-.tokban-modal-body-dropzone:empty { min-height: 48px; border: 2px dashed #d0d0d0; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.02); }
-.tokban-modal-body-dropzone:empty::after { content: 'Drop body content here'; color: #999; font-size: 13px; font-style: italic; pointer-events: none; }
-.tokban-modal-body-dropzone:hover:empty { border-color: #007aff; background: rgba(0,122,255,0.04); }
-/* wwEditor:end */
-.tokban-modal-body-dropzone:not(:empty) { display: flex; flex-direction: column; }
+.tk-body { padding: 12px 24px 16px; display: flex; flex-direction: column; gap: 12px; }
+.tk-body-html { font-size: 14px; line-height: 1.6; color: #616161; }
+.tk-body-html :deep(p) { margin: 0 0 8px; }
+.tk-body-html :deep(p:last-child) { margin-bottom: 0; }
+.tk-body-html :deep(strong) { font-weight: 600; color: #2C3131; }
 
 /* ── Banners ── */
-.tokban-modal-banner { display: flex; align-items: flex-start; gap: 8px; padding: 12px 14px; border-radius: 8px; border: 1px solid transparent; font-size: 14px; line-height: 1.5; }
-.tokban-modal-banner-icon { flex-shrink: 0; margin-top: 1px; }
+.tk-banner {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 11px 13px; border-radius: 8px; border: 1px solid transparent;
+  font-size: 13px; font-weight: 500; line-height: 1.5;
+}
+.tk-banner-icon { flex-shrink: 0; margin-top: 1px; width: 15px; height: 15px; }
+.tk-banner span :deep(strong) { font-weight: 700; }
 
 /* ── Checklist ── */
-.tokban-modal-checklist { display: flex; flex-direction: column; gap: var(--checklist-gap); }
-.tokban-modal-checklist-title { font-size: 13px; font-weight: 600; color: #374151; margin: 0 0 2px; }
-.tokban-modal-checklist-row { display: flex; align-items: flex-start; gap: 10px; }
-.tokban-modal-checklist-icon { flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; }
-.tokban-modal-checklist-text { font-size: 14px; line-height: 1.5; color: #374151; }
-.tokban-modal-checklist-text :deep(strong) { font-weight: 600; }
+.tk-checklist { display: flex; flex-direction: column; gap: var(--tk-checklist-gap); }
+.tk-checklist-title { margin: 0 0 4px; font-size: 13px; font-weight: 600; color: #2C3131; }
+.tk-checklist-row { display: flex; align-items: flex-start; gap: 9px; }
+.tk-checklist-icon { flex-shrink: 0; margin-top: 1px; display: flex; }
+.tk-checklist-text { font-size: 13px; line-height: 1.55; color: #616161; }
+.tk-checklist-text :deep(strong) { font-weight: 600; color: #2C3131; }
 
-/* ── HTML Body ── */
-.tokban-modal-body-html { font-size: 14px; line-height: 1.5; color: #374151; }
-.tokban-modal-body-html :deep(p) { margin: 0 0 8px; }
-.tokban-modal-body-html :deep(p:last-child) { margin-bottom: 0; }
-.tokban-modal-body-html :deep(strong) { font-weight: 600; }
+/* ── Free-text input section ── */
+.tk-input-section { display: flex; flex-direction: column; gap: 6px; }
+.tk-input-label { font-size: 13px; font-weight: 500; color: #2C3131; line-height: 1.4; }
+.tk-input-help  { margin: 0; font-size: 12px; color: #A8A8A8; line-height: 1.4; }
 
-/* ── Free-text input (new branch name etc.) ── */
-.tokban-modal-input-section { display: flex; flex-direction: column; gap: 6px; }
-.tokban-modal-input-label { font-size: 14px; font-weight: 500; color: #374151; line-height: 1.4; }
-.tokban-modal-input-help { margin: 0; font-size: 12px; color: #6b7280; line-height: 1.4; }
-
-/* ── Typed Confirmation ── */
-.tokban-modal-typed-section { display: flex; flex-direction: column; gap: 6px; }
-.tokban-modal-typed-label { font-size: 14px; color: #4b5563; line-height: 1.4; }
-.tokban-modal-typed-input {
-  width: 100%; padding: 10px 12px;
-  border: 1px solid var(--input-border); border-radius: var(--input-radius);
-  font-size: 14px; outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  font-family: inherit; box-sizing: border-box;
+/* ── Typed confirmation ── */
+.tk-typed-section { display: flex; flex-direction: column; gap: 6px; }
+.tk-typed-label { font-size: 13px; color: #616161; line-height: 1.4; }
+.tk-typed-label :deep(strong) { font-weight: 600; color: #2C3131; }
+.tk-typed-input {
+  width: 100%; padding: 9px 12px;
+  border: 1.5px solid var(--tk-input-border); border-radius: var(--tk-input-radius);
+  font-size: 14px; font-family: inherit; color: #2C3131; outline: none;
+  box-sizing: border-box; transition: border-color 0.15s, box-shadow 0.15s;
 }
-.tokban-modal-typed-input:focus { border-color: #9ca3af; box-shadow: 0 0 0 3px rgba(156,163,175,0.15); }
-.tokban-modal-typed-input.is-valid { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
-.tokban-modal-typed-input.is-invalid { border-color: #ef4444; }
-.tokban-modal-typed-hint { margin: 0; font-size: 12px; color: #9ca3af; }
+.tk-typed-input:focus       { border-color: #A8A8A8; box-shadow: 0 0 0 3px rgba(168,168,168,0.15); }
+.tk-typed-input.is-valid    { border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76,175,80,0.12); }
+.tk-typed-input.is-invalid  { border-color: #E53935; }
+.tk-typed-hint { margin: 0; font-size: 12px; color: #A8A8A8; }
 
 /* ── Footer ── */
-.tokban-modal-footer {
+.tk-footer {
   display: flex; align-items: center; justify-content: flex-end;
-  gap: 12px; padding: 16px 24px;
-  border-top: 1px solid var(--footer-border); background: var(--footer-bg);
-  border-radius: 0 0 var(--panel-radius) var(--panel-radius);
+  gap: 12px; padding: 14px 24px;
+  border-top: 1px solid var(--tk-footer-border);
 }
-.tokban-modal-footer-dropzone { flex: 0 0 auto; min-height: 0; }
-/* wwEditor:start */
-.tokban-modal-footer-dropzone:empty { min-height: 32px; min-width: 48px; border: 2px dashed #d0d0d0; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-right: auto; }
-.tokban-modal-footer-dropzone:empty::after { content: '+'; color: #999; font-size: 14px; pointer-events: none; }
-.tokban-modal-footer-dropzone:hover:empty { border-color: #007aff; }
-/* wwEditor:end */
-.tokban-modal-footer-dropzone:not(:empty) { margin-right: auto; display: flex; align-items: center; gap: 8px; }
-
-.tokban-modal-footer-buttons { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-
-.tokban-modal-cancel-btn {
-  padding: 8px 16px; font-size: 14px; font-weight: 500;
-  color: var(--cancel-color); background: none; border: none;
-  cursor: pointer; transition: color 0.15s, opacity 0.15s;
-  font-family: inherit; border-radius: 6px;
+.tk-btn-cancel {
+  padding: 9px 16px; font-size: 14px; font-weight: 500; font-family: inherit;
+  color: var(--tk-cancel-color); background: none; border: none;
+  border-radius: var(--tk-btn-radius); cursor: pointer;
+  transition: color 0.15s, opacity 0.15s;
 }
-.tokban-modal-cancel-btn:hover:not(:disabled) { color: #1f2937; }
-.tokban-modal-cancel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.tokban-modal-confirm-btn {
+.tk-btn-cancel:hover:not(:disabled) { color: #2C3131; }
+.tk-btn-cancel:disabled { opacity: 0.4; cursor: not-allowed; }
+.tk-btn-confirm {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 20px; font-size: 14px; font-weight: 600;
-  color: #ffffff; border: none; border-radius: var(--btn-radius);
+  padding: 9px 20px; font-size: 14px; font-weight: 600; font-family: inherit;
+  color: #ffffff; border: none; border-radius: var(--tk-btn-radius);
   cursor: pointer; transition: filter 0.15s, opacity 0.15s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05); font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
-.tokban-modal-confirm-btn:hover:not(:disabled) { filter: brightness(0.9); }
-.tokban-modal-confirm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.tk-btn-confirm:hover:not(:disabled) { filter: brightness(0.88); }
+.tk-btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ── Spinner ── */
-@keyframes tokban-spin { to { transform: rotate(360deg); } }
-.tokban-modal-spinner {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(255,255,255,0.4); border-top-color: #ffffff;
-  border-radius: 50%; animation: tokban-spin 0.6s linear infinite; flex-shrink: 0;
+@keyframes tk-spin { to { transform: rotate(360deg); } }
+.tk-spinner {
+  width: 14px; height: 14px; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.35); border-top-color: #ffffff;
+  border-radius: 50%; animation: tk-spin 0.6s linear infinite;
 }
 </style>

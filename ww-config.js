@@ -4,559 +4,341 @@ export default {
     icon: 'alert',
   },
   triggerEvents: [
-    {
-      name: 'confirm',
-      label: { en: 'On confirm' },
-      event: { action: '', typedValue: '', inputValue: '' },
-    },
-    {
-      name: 'cancel',
-      label: { en: 'On cancel' },
-      event: {},
-    },
-    {
-      name: 'close',
-      label: { en: 'On close' },
-      event: { reason: '' },
-    },
-    {
-      name: 'typed-value-change',
-      label: { en: 'On typed value change' },
-      event: { value: '' },
-    },
-    {
-      name: 'input-value-change',
-      label: { en: 'On input value change' },
-      event: { value: '' },
-    },
+    { name: 'confirm',            label: { en: 'On confirm'           }, event: { action: '', typedValue: '', inputValue: '' } },
+    { name: 'cancel',             label: { en: 'On cancel'            }, event: {} },
+    { name: 'close',              label: { en: 'On close'             }, event: { reason: '' } },
+    { name: 'typed-value-change', label: { en: 'On typed value change'}, event: { value: '' } },
+    { name: 'input-value-change', label: { en: 'On input value change'}, event: { value: '' } },
   ],
   properties: {
 
-    // ═══════════════════════════════════════
-    // DROPZONES — appear in the element tree
-    // ═══════════════════════════════════════
+    // ─────────────────────────────────────────
+    // DROPZONE (icon fallback only)
+    // ─────────────────────────────────────────
+    iconContent: { hidden: true, defaultValue: [] },
 
-    iconContent:   { hidden: true, defaultValue: [] },
-    titleContent:  { hidden: true, defaultValue: [] },
-    bodyContent:   { hidden: true, defaultValue: [] },
-    footerContent: { hidden: true, defaultValue: [] },
-
-    // ═══════════════════════════════════════
-    // SETTINGS TAB
-    // ═══════════════════════════════════════
-
-    // ── Visibility ──
+    // ─────────────────────────────────────────
+    // VISIBILITY
+    // ─────────────────────────────────────────
     visible: {
-      label: { en: 'Visible' },
-      type: 'OnOff',
-      section: 'settings',
-      defaultValue: false,
-      bindable: true,
+      label: { en: 'Visible' }, type: 'OnOff', section: 'settings', defaultValue: false, bindable: true,
       /* wwEditor:start */
-      bindingValidation: {
-        type: 'boolean',
-        tooltip: 'Controls modal visibility. Bind to your confirmModal variable (confirmModal !== null).',
-      },
-      propertyHelp: {
-        tooltip: 'Bind to a formula like: variables[\'confirmModal\'] !== null',
-      },
+      bindingValidation: { type: 'boolean', tooltip: 'Bind to your confirmModal variable. Set true to open, false to close.' },
+      propertyHelp:      { tooltip: 'Bind to a boolean variable and set it true from a workflow to show the modal.' },
       /* wwEditor:end */
     },
 
-    // ── Icon circle color ──
+    // ─────────────────────────────────────────
+    // HEADER — icon
+    // ─────────────────────────────────────────
+    iconName: {
+      label: { en: 'Icon Name' }, type: 'Text', section: 'settings', defaultValue: 'warning', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Material Symbols icon name. e.g. warning, check_circle, delete_forever, business, store' },
+      propertyHelp:      { tooltip: 'Bind to confirmModal.icon. Full list: fonts.google.com/icons' },
+      /* wwEditor:end */
+    },
     iconColor: {
-      label: { en: 'Icon Circle Color' },
-      type: 'TextSelect',
-      section: 'settings',
-      options: {
-        options: [
-          { value: 'blue',   label: 'Blue'   },
-          { value: 'orange', label: 'Orange' },
-          { value: 'red',    label: 'Red'    },
-          { value: 'green',  label: 'Green'  },
-          { value: 'amber',  label: 'Amber'  },
-          { value: 'purple', label: 'Purple' },
-        ],
-      },
-      defaultValue: 'blue',
-      bindable: true,
+      label: { en: 'Icon Color' }, type: 'Color', section: 'settings', defaultValue: '#1565C0', bindable: true,
       /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'Icon circle color key: blue | orange | red | green | amber | purple. Bind to confirmModal?.iconColor',
-      },
+      bindingValidation: { type: 'string', tooltip: 'Hex color for the icon glyph. Also used to auto-derive icon circle background if iconBg is not bound.' },
+      /* wwEditor:end */
+    },
+    iconBg: {
+      label: { en: 'Icon Circle Background' }, type: 'Color', section: 'settings', defaultValue: '#E8F1FA', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Hex color for the icon circle background. If not bound, auto-derived as a 90% lightened tint of iconColor.' },
+      /* wwEditor:end */
+    },
+    iconSize: {
+      label: { en: 'Icon Size' }, type: 'Length', section: 'settings', defaultValue: '20px', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Font size of the Material icon glyph' },
       /* wwEditor:end */
     },
 
-    // ── Info Banner ──
-    infoBannerText: {
-      label: { en: 'Info Banner Text' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
+    // ─────────────────────────────────────────
+    // HEADER — title & subtitle
+    // ─────────────────────────────────────────
+    title: {
+      label: { en: 'Title' }, type: 'Text', section: 'settings', defaultValue: 'Confirm action', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Text/HTML shown in the blue info banner. Leave empty to hide.' },
-      propertyHelp: { tooltip: 'Appears above the body. Supports <strong> tags.' },
+      bindingValidation: { type: 'string', tooltip: 'Modal title. Supports HTML. Bind to confirmModal.title' },
+      /* wwEditor:end */
+    },
+    subtitle: {
+      label: { en: 'Subtitle' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Optional subtitle below the title. Leave empty to hide. Bind to confirmModal.subtitle' },
+      /* wwEditor:end */
+    },
+
+    // ─────────────────────────────────────────
+    // BODY — info banner (top)
+    // ─────────────────────────────────────────
+    infoBannerText: {
+      label: { en: 'Info Banner Text' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Text/HTML shown in the info banner at the top of the body. Leave empty to hide. Bind to confirmModal.infoBannerText' },
       /* wwEditor:end */
     },
     infoBannerColor: {
-      label: { en: 'Info Banner Color' },
-      type: 'TextSelect',
-      section: 'settings',
-      options: {
-        options: [
-          { value: 'blue',   label: 'Blue'   },
-          { value: 'green',  label: 'Green'  },
-          { value: 'amber',  label: 'Amber'  },
-          { value: 'red',    label: 'Red'    },
-          { value: 'orange', label: 'Orange' },
-          { value: 'purple', label: 'Purple' },
-        ],
-      },
-      defaultValue: 'blue',
-      bindable: true,
+      label: { en: 'Info Banner Color' }, type: 'Color', section: 'settings', defaultValue: '#1565C0', bindable: true,
       hidden: (content) => !content?.infoBannerText,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Color theme for the info banner' },
+      bindingValidation: { type: 'string', tooltip: 'Hex color for the info banner. Background and border are auto-derived as lighter tints.' },
       /* wwEditor:end */
     },
 
-    // ── Checklist ──
-    checklistTitle: {
-      label: { en: 'Checklist Section Title' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: 'What changes:',
-      bindable: true,
+    // ─────────────────────────────────────────
+    // BODY — body text
+    // ─────────────────────────────────────────
+    bodyHtml: {
+      label: { en: 'Body Text (HTML)' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Optional heading above the checklist.' },
+      bindingValidation: { type: 'string', tooltip: 'Main body text. Supports HTML (<strong>, <br> etc). Bind to confirmModal.body' },
+      /* wwEditor:end */
+    },
+
+    // ─────────────────────────────────────────
+    // BODY — checklist
+    // ─────────────────────────────────────────
+    checklistTitle: {
+      label: { en: 'Checklist Section Title' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Optional heading above the checklist items. Leave empty to hide.' },
       /* wwEditor:end */
     },
     checklistItems: {
-      label: { en: 'Checklist Items' },
-      type: 'Array',
-      section: 'settings',
-      bindable: true,
-      defaultValue: [
-        { id: '1', text: 'First change description', icon: 'check', iconColor: '#2563EB' },
-        { id: '2', text: 'Second change description', icon: 'check', iconColor: '#2563EB' },
-      ],
+      label: { en: 'Checklist Items' }, type: 'Array', section: 'settings', bindable: true, defaultValue: [],
       options: {
         expandable: true,
-        getItemLabel(item) {
-          return (item?.text || 'Item').replace(/<[^>]+>/g, '').substring(0, 50) || 'Item';
-        },
+        getItemLabel(item) { return (item?.text || 'Item').replace(/<[^>]+>/g, '').substring(0, 50) || 'Item'; },
         item: {
           type: 'Object',
-          defaultValue: { id: 'new', text: 'New checklist item', icon: 'check', iconColor: '#2563EB' },
+          defaultValue: { id: 'new', text: 'Checklist item', icon: 'check', iconColor: '' },
           options: {
             item: {
               id:        { label: { en: 'ID' },                  type: 'Text' },
-              text:      { label: { en: 'Text (HTML supported)' }, type: 'Text' },
+              text:      { label: { en: 'Text (HTML ok)' },       type: 'Text' },
               icon: {
-                label: { en: 'Icon' },
-                type: 'TextSelect',
-                options: {
-                  options: [
-                    { value: 'check',   label: '✅ Check circle'     },
-                    { value: 'warning', label: '⚠️ Warning triangle' },
-                    { value: 'info',    label: 'ℹ️ Info circle'      },
-                  ],
-                },
+                label: { en: 'Icon' }, type: 'TextSelect',
+                options: { options: [
+                  { value: 'check',   label: '✅ Check circle' },
+                  { value: 'x',       label: '✕ X circle (danger)' },
+                  { value: 'warning', label: '⚠️ Warning triangle' },
+                ]},
               },
-              iconColor: { label: { en: 'Icon Color' }, type: 'Color' },
+              iconColor: { label: { en: 'Icon Color (hex, optional)' }, type: 'Color' },
             },
           },
         },
       },
       /* wwEditor:start */
-      bindingValidation: {
-        type: 'array',
-        tooltip: 'Array of checklist items: { id, text (HTML ok), icon (check|warning|info), iconColor }. Bind to confirmModal?.checklist',
-      },
+      bindingValidation: { type: 'array', tooltip: 'Bind to confirmModal.checklist. Array of { id, text, icon, iconColor }' },
       /* wwEditor:end */
     },
-    checklistDefaultIconColor: {
-      label: { en: 'Default Icon Color' },
-      type: 'Color',
-      section: 'settings',
-      defaultValue: '#2563EB',
-      bindable: true,
+    checklistIconColor: {
+      label: { en: 'Default Checklist Icon Color' }, type: 'Color', section: 'settings', defaultValue: '#E53935', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Fallback icon color for checklist items without iconColor set' },
+      bindingValidation: { type: 'string', tooltip: 'Fallback icon color for checklist items that have no iconColor set' },
       /* wwEditor:end */
     },
 
-    // ── Warning Banner ──
+    // ─────────────────────────────────────────
+    // BODY — warning banner (bottom)
+    // ─────────────────────────────────────────
     warningBannerText: {
-      label: { en: 'Warning Banner Text' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
+      label: { en: 'Warning Banner Text' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Text/HTML in the warning banner. Bind to confirmModal?.bannerText' },
-      propertyHelp: { tooltip: 'Appears below the checklist. Use for irreversible action warnings.' },
+      bindingValidation: { type: 'string', tooltip: 'Text/HTML shown in the warning banner below the checklist. Leave empty to hide. Bind to confirmModal.bannerText' },
       /* wwEditor:end */
     },
     warningBannerColor: {
-      label: { en: 'Warning Banner Color' },
-      type: 'TextSelect',
-      section: 'settings',
-      options: {
-        options: [
-          { value: 'amber',  label: 'Amber'  },
-          { value: 'red',    label: 'Red'    },
-          { value: 'blue',   label: 'Blue'   },
-          { value: 'green',  label: 'Green'  },
-          { value: 'orange', label: 'Orange' },
-          { value: 'purple', label: 'Purple' },
-        ],
-      },
-      defaultValue: 'amber',
-      bindable: true,
+      label: { en: 'Warning Banner Color' }, type: 'Color', section: 'settings', defaultValue: '#FFB300', bindable: true,
       hidden: (content) => !content?.warningBannerText,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Color theme for the warning banner' },
+      bindingValidation: { type: 'string', tooltip: 'Hex color for the warning banner. Background and border are auto-derived as lighter tints.' },
       /* wwEditor:end */
     },
 
-    // ── Body HTML ──
-    bodyHtml: {
-      label: { en: 'Body HTML' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
+    // ─────────────────────────────────────────
+    // BODY — free-text input (e.g. branch name)
+    // ─────────────────────────────────────────
+    inputLabel: {
+      label: { en: 'Input Field Label' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Optional HTML rendered below the body dropzone. Bind to confirmModal?.body' },
+      bindingValidation: { type: 'string', tooltip: 'If set, shows a free-text input field. Use for "add_branch" and "convert_to_multi" to collect a branch name. Leave empty to hide. Bind to confirmModal.inputLabel' },
+      propertyHelp:      { tooltip: 'Confirm button is disabled until the user types something in this field. The value is passed as event.inputValue on confirm.' },
+      /* wwEditor:end */
+    },
+    inputPlaceholder: {
+      label: { en: 'Input Field Placeholder' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
+      hidden: (content) => !content?.inputLabel,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Placeholder text for the free-text input field. Bind to confirmModal.inputPlaceholder' },
+      /* wwEditor:end */
+    },
+    inputHelp: {
+      label: { en: 'Input Field Help Text' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
+      hidden: (content) => !content?.inputLabel,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Small helper text shown below the input field. Bind to confirmModal.inputHelp' },
       /* wwEditor:end */
     },
 
-    // ── Buttons ──
+    // ─────────────────────────────────────────
+    // TYPED CONFIRMATION
+    // ─────────────────────────────────────────
+    requireTyped: {
+      label: { en: 'Required Typed Text' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'If set, user must type this exact text to enable confirm. Leave empty for simple confirmation. Bind to confirmModal.requireTyped' },
+      /* wwEditor:end */
+    },
+    typedLabel: {
+      label: { en: 'Typed Input Label' }, type: 'Text', section: 'settings', defaultValue: 'Type to confirm', bindable: true,
+      hidden: (content) => !content?.requireTyped,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Label above the typed input. Supports HTML. Bind to confirmModal.typedLabel' },
+      /* wwEditor:end */
+    },
+    typedPlaceholder: {
+      label: { en: 'Typed Input Placeholder' }, type: 'Text', section: 'settings', defaultValue: 'Type to confirm', bindable: true,
+      hidden: (content) => !content?.requireTyped,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Placeholder text inside the typed confirmation input' },
+      /* wwEditor:end */
+    },
+
+    // ─────────────────────────────────────────
+    // FOOTER — buttons
+    // ─────────────────────────────────────────
     confirmText: {
-      label: { en: 'Confirm Button Text' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: 'Confirm',
-      bindable: true,
+      label: { en: 'Confirm Button Text' }, type: 'Text', section: 'settings', defaultValue: 'Confirm', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Text on the confirm button. Bind to confirmModal?.confirmText' },
+      bindingValidation: { type: 'string', tooltip: 'Bind to confirmModal.confirmText' },
       /* wwEditor:end */
     },
     confirmColor: {
-      label: { en: 'Confirm Button Color' },
-      type: 'TextSelect',
-      section: 'settings',
-      options: {
-        options: [
-          { value: 'blue',   label: 'Blue'   },
-          { value: 'orange', label: 'Orange' },
-          { value: 'red',    label: 'Red'    },
-          { value: 'green',  label: 'Green'  },
-          { value: 'amber',  label: 'Amber'  },
-          { value: 'purple', label: 'Purple' },
-        ],
-      },
-      defaultValue: 'blue',
-      bindable: true,
+      label: { en: 'Confirm Button Color' }, type: 'Color', section: 'settings', defaultValue: '#F08227', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Confirm button color key. Bind to confirmModal?.confirmColor' },
+      bindingValidation: { type: 'string', tooltip: 'Hex background color of the confirm button. Bind to confirmModal.confirmColor' },
       /* wwEditor:end */
     },
     cancelText: {
-      label: { en: 'Cancel Button Text' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: 'Cancel',
-      bindable: true,
+      label: { en: 'Cancel Button Text' }, type: 'Text', section: 'settings', defaultValue: 'Cancel', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Text on the cancel button' },
+      bindingValidation: { type: 'string', tooltip: 'Text displayed on the cancel button' },
       /* wwEditor:end */
     },
     showCancelButton: {
-      label: { en: 'Show Cancel Button' },
-      type: 'OnOff',
-      section: 'settings',
-      defaultValue: true,
-      bindable: true,
+      label: { en: 'Show Cancel Button' }, type: 'OnOff', section: 'settings', defaultValue: true, bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'boolean', tooltip: 'Toggle to hide the cancel button' },
       /* wwEditor:end */
     },
-
-    // ── Loading State ──
-    loading: {
-      label: { en: 'Loading State' },
-      type: 'OnOff',
-      section: 'settings',
-      defaultValue: false,
-      bindable: true,
+    loadingText: {
+      label: { en: 'Loading Button Text' }, type: 'Text', section: 'settings', defaultValue: 'Processing...', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'boolean', tooltip: 'Bind to your async workflow state to show spinner on confirm button' },
+      bindingValidation: { type: 'string', tooltip: 'Button text shown while loading spinner is active' },
       /* wwEditor:end */
     },
-    loadingText: {
-      label: { en: 'Loading Button Text' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: 'Processing...',
-      bindable: true,
-      hidden: (content) => !content?.loading,
+
+    // ─────────────────────────────────────────
+    // BEHAVIOR
+    // ─────────────────────────────────────────
+    onConfirmAction: {
+      label: { en: 'Confirm Action ID' }, type: 'Text', section: 'settings', defaultValue: '', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Button text shown while loading' },
+      bindingValidation: { type: 'string', tooltip: 'Passed in the confirm event for workflow routing. Bind to confirmModal.action or entityAction variable.' },
+      /* wwEditor:end */
+    },
+    loading: {
+      label: { en: 'Loading State' }, type: 'OnOff', section: 'settings', defaultValue: false, bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'boolean', tooltip: 'When true, shows spinner on confirm button and disables all interactions.' },
       /* wwEditor:end */
     },
     autoLoading: {
-      label: { en: 'Auto Loading on Confirm' },
-      type: 'OnOff',
-      section: 'settings',
-      defaultValue: true,
-      bindable: true,
+      label: { en: 'Auto Loading on Confirm' }, type: 'OnOff', section: 'settings', defaultValue: true, bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'boolean', tooltip: 'ON: clicking confirm auto-shows spinner until visible=false. OFF: modal closes immediately.' },
+      bindingValidation: { type: 'boolean', tooltip: 'ON: clicking confirm auto-shows spinner, modal closes when visible=false. OFF: modal closes immediately on confirm.' },
+      propertyHelp:      { tooltip: 'Recommended ON for async DB operations. Your workflow sets visible=false when the operation completes.' },
       /* wwEditor:end */
     },
-
-    // ── Typed Confirmation ──
-    requireTyped: {
-      label: { en: 'Required Typed Text' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'User must type this exact text to enable confirm. Bind to confirmModal?.requireTyped' },
-      /* wwEditor:end */
-    },
-    typedLabel: {
-      label: { en: 'Typed Input Label' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: 'Type to confirm',
-      bindable: true,
-      hidden: (content) => !content?.requireTyped,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Label above the typed confirmation input. Supports HTML. Bind to confirmModal?.typedLabel' },
-      /* wwEditor:end */
-    },
-    typedPlaceholder: {
-      label: { en: 'Typed Input Placeholder' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: 'Type to confirm',
-      bindable: true,
-      hidden: (content) => !content?.requireTyped,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Placeholder for the typed confirmation input' },
-      /* wwEditor:end */
-    },
-
-    // ── Free-text input (branch name etc.) ──
-    inputLabel: {
-      label: { en: 'Input Label' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: {
-        type: 'string',
-        tooltip: 'If set (and requireTyped is empty), shows a free-text input. Confirm button is disabled until user types something. Bind to confirmModal?.inputLabel',
-      },
-      propertyHelp: {
-        tooltip: 'Use for "convert_to_multi" to collect the first branch name. Leave empty to hide.',
-      },
-      /* wwEditor:end */
-    },
-    inputPlaceholder: {
-      label: { en: 'Input Placeholder' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
-      hidden: (content) => !content?.inputLabel || !!content?.requireTyped,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Placeholder for the free-text input. Bind to confirmModal?.inputPlaceholder' },
-      /* wwEditor:end */
-    },
-    inputHelp: {
-      label: { en: 'Input Help Text' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
-      hidden: (content) => !content?.inputLabel || !!content?.requireTyped,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Small helper text shown below the input. Bind to confirmModal?.inputHelp' },
-      /* wwEditor:end */
-    },
-
-    // ── Action Routing ──
-    onConfirmAction: {
-      label: { en: 'Confirm Action ID' },
-      type: 'Text',
-      section: 'settings',
-      defaultValue: '',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Passed in the confirm event for workflow routing. Bind to entityAction variable.' },
-      /* wwEditor:end */
-    },
-
-    // ── Behavior ──
     closeOnBackdropClick: {
-      label: { en: 'Close on Backdrop Click' },
-      type: 'OnOff',
-      section: 'settings',
-      defaultValue: true,
-      bindable: true,
+      label: { en: 'Close on Backdrop Click' }, type: 'OnOff', section: 'settings', defaultValue: true, bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'boolean', tooltip: 'Whether clicking the backdrop closes the modal' },
+      bindingValidation: { type: 'boolean', tooltip: 'Whether clicking outside the modal closes it' },
       /* wwEditor:end */
     },
     closeOnEscape: {
-      label: { en: 'Close on Escape Key' },
-      type: 'OnOff',
-      section: 'settings',
-      defaultValue: true,
-      bindable: true,
+      label: { en: 'Close on Escape Key' }, type: 'OnOff', section: 'settings', defaultValue: true, bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'boolean', tooltip: 'Whether pressing Escape closes the modal' },
       /* wwEditor:end */
     },
     confirmOnEnter: {
-      label: { en: 'Confirm on Enter Key' },
-      type: 'OnOff',
-      section: 'settings',
-      defaultValue: false,
-      bindable: true,
+      label: { en: 'Confirm on Enter Key' }, type: 'OnOff', section: 'settings', defaultValue: false, bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'boolean', tooltip: 'Whether pressing Enter triggers confirm (only when confirm is enabled)' },
       /* wwEditor:end */
     },
 
-    // ═══════════════════════════════════════
+    // ─────────────────────────────────────────
     // STYLE TAB
-    // ═══════════════════════════════════════
-
-    modalMaxWidth: {
-      label: { en: 'Max Width' },
-      type: 'Length',
-      section: 'style',
-      defaultValue: '448px',
-      bindable: true,
+    // ─────────────────────────────────────────
+    maxWidth: {
+      label: { en: 'Max Width' }, type: 'Length', section: 'style', defaultValue: '448px', bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'string', tooltip: 'Maximum width of the modal panel' },
       /* wwEditor:end */
     },
     borderRadius: {
-      label: { en: 'Border Radius' },
-      type: 'Length',
-      section: 'style',
-      defaultValue: '12px',
-      bindable: true,
+      label: { en: 'Panel Border Radius' }, type: 'Length', section: 'style', defaultValue: '12px', bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'string', tooltip: 'Border radius of the modal panel' },
       /* wwEditor:end */
     },
-    panelBackground: {
-      label: { en: 'Panel Background' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: '#ffffff',
-      bindable: true,
+    btnRadius: {
+      label: { en: 'Button Border Radius' }, type: 'Length', section: 'style', defaultValue: '8px', bindable: true,
+      /* wwEditor:start */
+      bindingValidation: { type: 'string', tooltip: 'Border radius applied to both the confirm and cancel buttons' },
+      /* wwEditor:end */
+    },
+    panelBg: {
+      label: { en: 'Panel Background' }, type: 'Color', section: 'style', defaultValue: '#ffffff', bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'string', tooltip: 'Background color of the modal panel' },
       /* wwEditor:end */
     },
-    backdropColor: {
-      label: { en: 'Backdrop Color' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: 'rgba(0,0,0,0.4)',
-      bindable: true,
+    footerBorder: {
+      label: { en: 'Footer Border Color' }, type: 'Color', section: 'style', defaultValue: '#F4F4F4', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Backdrop overlay color' },
+      bindingValidation: { type: 'string', tooltip: 'Color of the divider line above the footer buttons' },
       /* wwEditor:end */
     },
-    backdropBlur: {
-      label: { en: 'Backdrop Blur' },
-      type: 'Length',
-      section: 'style',
-      defaultValue: '2px',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Backdrop blur intensity' },
-      /* wwEditor:end */
-    },
-    footerBorderColor: {
-      label: { en: 'Footer Border Color' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: '#f3f4f6',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Color of the divider above the footer' },
-      /* wwEditor:end */
-    },
-    footerBackground: {
-      label: { en: 'Footer Background' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: 'transparent',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Background color of the footer area' },
-      /* wwEditor:end */
-    },
-    confirmBtnBorderRadius: {
-      label: { en: 'Confirm Btn Radius' },
-      type: 'Length',
-      section: 'style',
-      defaultValue: '8px',
-      bindable: true,
-      /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Border radius of the confirm button' },
-      /* wwEditor:end */
-    },
-    cancelBtnColor: {
-      label: { en: 'Cancel Btn Color' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: '#4b5563',
-      bindable: true,
+    cancelColor: {
+      label: { en: 'Cancel Button Color' }, type: 'Color', section: 'style', defaultValue: '#616161', bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'string', tooltip: 'Text color of the cancel button' },
       /* wwEditor:end */
     },
-    inputBorderRadius: {
-      label: { en: 'Input Border Radius' },
-      type: 'Length',
-      section: 'style',
-      defaultValue: '8px',
-      bindable: true,
+    inputRadius: {
+      label: { en: 'Input Border Radius' }, type: 'Length', section: 'style', defaultValue: '8px', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Border radius of the input fields' },
+      bindingValidation: { type: 'string', tooltip: 'Border radius of the typed confirmation input' },
       /* wwEditor:end */
     },
-    inputBorderColor: {
-      label: { en: 'Input Border Color' },
-      type: 'Color',
-      section: 'style',
-      defaultValue: '#d1d5db',
-      bindable: true,
+    inputBorder: {
+      label: { en: 'Input Border Color' }, type: 'Color', section: 'style', defaultValue: '#C9C9C9', bindable: true,
       /* wwEditor:start */
-      bindingValidation: { type: 'string', tooltip: 'Border color of the input fields' },
+      bindingValidation: { type: 'string', tooltip: 'Default border color of the typed confirmation input' },
       /* wwEditor:end */
     },
     checklistGap: {
-      label: { en: 'Checklist Row Gap' },
-      type: 'Length',
-      section: 'style',
-      defaultValue: '10px',
-      bindable: true,
+      label: { en: 'Checklist Row Gap' }, type: 'Length', section: 'style', defaultValue: '10px', bindable: true,
       /* wwEditor:start */
       bindingValidation: { type: 'string', tooltip: 'Vertical gap between checklist rows' },
       /* wwEditor:end */
