@@ -224,25 +224,12 @@
 <script>
 import { computed, ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 
-const ICON_BG_MAP = {
-  red:   '#fef2f2',
-  blue:  '#eff6ff',
-  green: '#f0fdf4',
-  amber: '#fffbeb',
-};
-
-const BTN_COLOR_MAP = {
-  red:   '#ef4444',
-  blue:  '#2563eb',
-  green: '#16a34a',
-  amber: '#d97706',
-};
-
-const BANNER_STYLES = {
-  blue:  { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
-  green: { bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
-  amber: { bg: '#fffbeb', text: '#b45309', border: '#fde68a' },
-  red:   { bg: '#fef2f2', text: '#b91c1c', border: '#fecaca' },
+// Banner presets keyed by bannerType — matches bannerType values in confirmModal formula
+const BANNER_PRESETS = {
+  info:    { bg: '#E8F1FA', text: '#1565C0', border: '#90B8E0' },
+  success: { bg: '#EDFAED', text: '#2E7D32', border: '#A5D6A7' },
+  warning: { bg: '#FFF8E5', text: '#B45309', border: '#FFD54F' },
+  danger:  { bg: '#FEF2F2', text: '#B71C1C', border: '#FFCDD2' },
 };
 
 export default {
@@ -312,7 +299,7 @@ export default {
 
     // ── Computed ──
     const iconWrapStyle = computed(() => ({
-      backgroundColor: ICON_BG_MAP[props.content?.iconColor] || ICON_BG_MAP.red,
+      backgroundColor: props.content?.iconBg || '#FFF3E8',
     }));
 
     const panelStyle = computed(() => ({
@@ -320,7 +307,7 @@ export default {
     }));
 
     const confirmBtnStyle = computed(() => ({
-      backgroundColor: BTN_COLOR_MAP[props.content?.confirmColor] || BTN_COLOR_MAP.red,
+      backgroundColor: props.content?.confirmColor || '#F08227',
     }));
 
     const checklistItems = computed(() => {
@@ -361,25 +348,15 @@ export default {
       return `Keep going…`;
     });
 
-    // ── Banner Styles ──
     const infoBannerStyle = computed(() => {
-      const key = props.content?.infoBannerColor || 'blue';
-      const s = BANNER_STYLES[key] || BANNER_STYLES.blue;
-      return {
-        backgroundColor: s.bg,
-        color: s.text,
-        borderColor: s.border,
-      };
+      const s = BANNER_PRESETS['info'];
+      return { backgroundColor: s.bg, color: s.text, borderColor: s.border };
     });
 
     const warningBannerStyle = computed(() => {
-      const key = props.content?.warningBannerColor || 'amber';
-      const s = BANNER_STYLES[key] || BANNER_STYLES.amber;
-      return {
-        backgroundColor: s.bg,
-        color: s.text,
-        borderColor: s.border,
-      };
+      const type = props.content?.warningBannerType || 'warning';
+      const s = BANNER_PRESETS[type] || BANNER_PRESETS['warning'];
+      return { backgroundColor: s.bg, color: s.text, borderColor: s.border };
     });
 
     // ── Open / Close ──
@@ -534,8 +511,12 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
 .tokban-modal-root {
   position: relative;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* ── Backdrop ── */
